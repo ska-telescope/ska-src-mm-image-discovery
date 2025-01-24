@@ -1,0 +1,19 @@
+image_registry_url: ""
+image_tag: ""
+
+mongodb:
+  auth:
+    enabled: true
+    rootPassword: changeme
+    username: root
+    password: changeme
+    database: ryze
+
+  # Persistent storage settings
+  persistence:
+    enabled: true
+    size: 8Gi
+
+  # Disable replica set
+  replicaSet:
+    enabled: false
