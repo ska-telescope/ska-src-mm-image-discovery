@@ -1,3 +1,4 @@
-image_registry_url: ""
-image_tag: ""
+imageRegistryUrl: ""
+imageTag: ""
 
+mongodb: {}
