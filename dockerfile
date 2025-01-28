@@ -33,5 +33,4 @@ COPY --from=build /usr/src/app/target/ska-src-mm-image-discovery /app/ska-src-mm
 EXPOSE 8080
 
 # Run the application
-# ENTRYPOINT ["/app/ska-src-mm-image-discovery"]
-ENTRYPOINT ["sleep", "100000"]
+ENTRYPOINT ["/app/ska-src-mm-image-discovery"]
