@@ -1,9 +1,9 @@
 # First stage: Build the native image
-FROM openjdk:21-jdk-slim
+FROM ghcr.io/graalvm/native-image-community:21
 
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Copy Maven configuration and download dependencies
 COPY pom.xml .
@@ -15,10 +15,10 @@ RUN ./mvnw dependency:go-offline
 COPY src/main ./src/main
 
 # Compile the native image, skipping tests for faster build
-RUN ./mvnw package -DskipTests
+RUN ./mvnw -Pnative native:compile -DskipTests
 
 # Expose the port for the application
 EXPOSE 8080
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "/app/target/ska-src-mm-image-discovery-0.0.1.jar"]
+ENTRYPOINT ["/usr/src/app/target/ska-src-mm-image-discovery"]
