@@ -10,6 +10,8 @@ test-service:
     name: openjdk:21-jdk-slim
     entrypoint: [""]
   stage: test
+  before_script:
+    - export $JAVA_HOME=/usr/local/openjdk-21
   script:
     - ./mvnw dependency:go-offline
     - ./mvnw test
