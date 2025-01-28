@@ -6,6 +6,10 @@ stages:
   - test
 
 test-service:
+  image:
+    name: openjdk:21-jdk-slim
+    entrypoint: [""]
   stage: test
   script:
+    - ./mvnw dependency:go-offline
     - ./mvnw test
