@@ -1,7 +1,6 @@
 # First stage: Build the native image
 FROM ghcr.io/graalvm/native-image-community:21
 
-
 # Set the working directory
 WORKDIR /usr/src/app
 

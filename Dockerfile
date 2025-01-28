@@ -14,6 +14,10 @@ RUN ./mvnw dependency:go-offline
 # Copy the application source code
 COPY src/main ./src/main
 
+
+
+
+
 # Compile the native image, skipping tests for faster build
 RUN ./mvnw -Pnative native:compile -DskipTests
 
