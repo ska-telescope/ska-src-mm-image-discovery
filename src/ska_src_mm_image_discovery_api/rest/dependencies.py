@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer
 from starlette.requests import Request
 
-from {{ python_package_name }}.common.exceptions import handle_exceptions, PermissionDenied
+from ska_src_mm_image_discovery_api.common.exceptions import handle_exceptions, PermissionDenied
 
 
 class Common:

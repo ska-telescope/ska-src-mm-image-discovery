@@ -3,7 +3,7 @@
 export SERVICE_VERSION=`cat VERSION`
 export README_MD=`cat README.md`
 
-cd src/{{ python_package_name }}/rest
+cd src/ska_src_mm_image_discovery_api/rest
 
 env
 

@@ -7,7 +7,7 @@ class TestApiEndpoints(TestCase):
     def setUpClass(self):
         os.mkdir("static")
         try:
-            from {{ python_package_name }}.rest.server import app
+            from ska_src_mm_image_discovery_api.rest.server import app
         except:
             os.rmdir("static")
             raise

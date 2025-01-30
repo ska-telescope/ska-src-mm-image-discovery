@@ -1,6 +1,6 @@
 import requests
 
-from {{ python_package_name }}.common.exceptions import IAMEndpointNotFoundInWellKnown
+from ska_src_mm_image_discovery_api.common.exceptions import IAMEndpointNotFoundInWellKnown
 
 
 class IAM:

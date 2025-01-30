@@ -16,14 +16,14 @@ data_files = [
 scripts = glob.glob('bin/*')
 
 setup(
-    name='{{ python_package_name }}',
+    name='ska_src_mm_image_discovery_api',
     version=version,
-    description='The {{ api_name_hyphenated }} API for SRCNet.',
+    description='The mm-image-discovery API for SRCNet.',
     url='',
     author='rob barnsley',
     author_email='rob.barnsley@skao.int',
-    packages=['{{ python_package_name }}.rest', '{{ python_package_name }}.common', '{{ python_package_name }}.client',
-              '{{ python_package_name }}.models'],
+    packages=['ska_src_mm_image_discovery_api.rest', 'ska_src_mm_image_discovery_api.common', 'ska_src_mm_image_discovery_api.client',
+              'ska_src_mm_image_discovery_api.models'],
     package_dir={'': 'src'},
     data_files=data_files,
     scripts=scripts,

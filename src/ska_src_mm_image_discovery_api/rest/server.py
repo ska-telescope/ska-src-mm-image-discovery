@@ -17,12 +17,12 @@ from starlette.config import Config
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from {{ python_package_name }} import models
-from {{ python_package_name }}.common import constants
-from {{ python_package_name }}.common.exceptions import handle_exceptions, PermissionDenied
-from {{ python_package_name }}.common.utility import convert_readme_to_html_docs, get_api_server_url_from_request, \
+from ska_src_mm_image_discovery_api import models
+from ska_src_mm_image_discovery_api.common import constants
+from ska_src_mm_image_discovery_api.common.exceptions import handle_exceptions, PermissionDenied
+from ska_src_mm_image_discovery_api.common.utility import convert_readme_to_html_docs, get_api_server_url_from_request, \
     get_base_url_from_request, get_url_for_app_from_request
-from {{ python_package_name }}.rest import dependencies
+from ska_src_mm_image_discovery_api.rest import dependencies
 from ska_src_permissions_api.client.permissions import PermissionsClient
 
 config = Config('.env')
@@ -54,7 +54,7 @@ IAM_CONSTANTS = constants.IAM(client_conf_url=config.get('IAM_CLIENT_CONF_URL'))
 #
 security = HTTPBearer()
 
-# Instantiate an OAuth2 request session for the {{ python_package_name }} client.
+# Instantiate an OAuth2 request session for the ska_src_mm_image_discovery_api client.
 #
 API_IAM_CLIENT = OAuth2Session(config.get("API_IAM_CLIENT_ID"),
                                config.get("API_IAM_CLIENT_SECRET"),
@@ -113,7 +113,7 @@ async def oper_docs(request: Request) -> TEMPLATES.TemplateResponse:
     return TEMPLATES.TemplateResponse("docs.html", {
         "request": request,
         "base_url": get_base_url_from_request(request, config.get('API_SCHEME', default='http')),
-        "page_title": "{{ api_name_hyphenated_and_capitalised }} API Operator Documentation",
+        "page_title": "Mm-Image-Discovery API Operator Documentation",
         "openapi_schema": openapi_schema_template.render({
             "api_server_url": get_api_server_url_from_request(request, config.get('API_SCHEME', default='http'))
         }),
@@ -157,7 +157,7 @@ async def user_docs(request: Request) -> TEMPLATES.TemplateResponse:
     return TEMPLATES.TemplateResponse("docs.html", {
         "request": request,
         "base_url": get_base_url_from_request(request, config.get('API_SCHEME', default='http')),
-        "page_title": "{{ api_name_hyphenated_and_capitalised }} API User Documentation",
+        "page_title": "Mm-Image-Discovery API User Documentation",
         "openapi_schema": openapi_schema_template.render({
             "api_server_url": get_api_server_url_from_request(request, config.get('API_SCHEME', default='http'))
         }),
@@ -243,7 +243,7 @@ for route in app.routes:
         subapp_base_path = '{}{}'.format(os.environ.get('API_ROOT_PATH', default=''), route.path)
         subapp.openapi()
         subapp.openapi_schema['servers'] = [{"url": subapp_base_path}]
-        subapp.openapi_schema['info']['title'] = '{{ api_name_hyphenated_and_capitalised }} API Overview'
+        subapp.openapi_schema['info']['title'] = 'Mm-Image-Discovery API Overview'
         subapp.openapi_schema['tags'] = [
             {"name": "Status", "description": "Operations describing the status of the API.", "x-tag-expanded": False},
         ]

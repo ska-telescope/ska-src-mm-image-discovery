@@ -5,11 +5,11 @@ USER root
 RUN groupadd user
 RUN adduser --system --no-create-home --disabled-password --shell /bin/bash user
 
-COPY --chown=user . /opt/{{ repository_name }}
+COPY --chown=user . /opt/ska-src-mm-image-discovery-api
 
-RUN cd /opt/{{ repository_name }} && python3 -m pip install -e . --extra-index-url https://gitlab.com/api/v4/projects/48060714/packages/pypi/simple
+RUN cd /opt/ska-src-mm-image-discovery-api && python3 -m pip install -e . --extra-index-url https://gitlab.com/api/v4/projects/48060714/packages/pypi/simple
 
-WORKDIR /opt/{{ repository_name }}
+WORKDIR /opt/ska-src-mm-image-discovery-api
 
 ENV API_ROOT_PATH ''
 ENV API_SCHEME ''

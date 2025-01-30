@@ -3,14 +3,14 @@
 import argparse
 import json
 
-from {{ python_package_name }}.client.{{ python_client_module_name }} import {{ python_client_class_name }}
+from ska_src_mm_image_discovery_api.client.mm_image_discovery import MmImageDiscoveryClient
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--api-url', help="{{ api_name_hyphenated }} api url", type=str,
-                        default="https://{{ api_name_hyphenated }}.srcdev.skao.int/api/v1")
-    subparsers = parser.add_subparsers(help='command line interface for the {{ api_name_hyphenated }} api', dest='command')
+    parser.add_argument('--api-url', help="mm-image-discovery api url", type=str,
+                        default="https://mm-image-discovery.srcdev.skao.int/api/v1")
+    subparsers = parser.add_subparsers(help='command line interface for the mm-image-discovery api', dest='command')
 
     # health
     health_parser = subparsers.add_parser("health")
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    client = {{ python_client_class_name }}(args.api_url)
+    client = MmImageDiscoveryClient(args.api_url)
     if args.command == 'health':
         rtn = client.health()
         rtn.raise_for_status()

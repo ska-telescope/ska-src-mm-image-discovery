@@ -1,9 +1,9 @@
 import requests
 
-from {{ python_package_name }}.common.exceptions import handle_client_exceptions
+from ska_src_mm_image_discovery_api.common.exceptions import handle_client_exceptions
 
 
-class {{ python_client_class_name }}:
+class MmImageDiscoveryClient:
     def __init__(self, api_url, session=None):
         self.api_url = api_url
         if session:
