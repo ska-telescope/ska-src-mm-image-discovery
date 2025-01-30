@@ -16,27 +16,6 @@ spec:
         io.kompose.service: core
     spec:
       containers:
-      - env:
-        - name: API_ROOT_PATH
-          value: {{ .Values.svc.api.root_path }}
-        - name: API_SCHEME
-          value: {{ .Values.svc.api.scheme }}
-        - name: IAM_CLIENT_CONF_URL
-          value: {{ .Values.svc.api.iam_client_conf_url }}
-        - name: API_IAM_CLIENT_ID
-          value: {{ .Values.svc.api.iam_client_id }}
-        - name: API_IAM_CLIENT_SECRET
-          value: {{ .Values.svc.api.iam_client_secret }}
-        - name: API_IAM_CLIENT_SCOPES
-          value: {{ .Values.svc.api.iam_client_scopes }}
-        - name: API_IAM_CLIENT_AUDIENCE
-          value: {{ .Values.svc.api.iam_client_audience }}
-        - name: PERMISSIONS_API_URL
-          value: {{ .Values.svc.api.permissions_api_url }}
-        - name: PERMISSIONS_SERVICE_NAME
-          value: {{ .Values.svc.api.permissions_service_name }}
-        - name: PERMISSIONS_SERVICE_VERSION
-          value: {{ .Values.svc.api.permissions_service_version | quote }}
         image: {{ .Values.image_registry_url }}:{{ .Values.image_tag }}
         imagePullPolicy: Always
         name: ska-src-mm-image-discovery-api-core

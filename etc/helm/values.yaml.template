@@ -1,18 +1,4 @@
 image_registry_url: registry.gitlab.com/ska-telescope/src/src-service-apis/ska-src-mm-image-discovery-api/api
 image_tag: mm-image-discovery.srcdev.skao.int
-svc:
-  api:
-    root_path: /api
-    scheme: https
-    iam_client_conf_url: https://ska-iam.stfc.ac.uk/.well-known/openid-configuration
-    iam_client_id:
-    iam_client_secret:
-    iam_client_scopes: "openid profile"
-    iam_client_audience: mm-image-discovery-api
-    permissions_api_url: https://permissions.srcdev.skao.int/api/v1
-    permissions_service_name: mm-image-discovery-api
-    permissions_service_version: 1
-ing:
-  api:
-    host: mm-image-discovery.srcdev.skao.int
+
 

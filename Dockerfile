@@ -11,15 +11,4 @@ RUN cd /opt/ska-src-mm-image-discovery-api && python3 -m pip install -e . --extr
 
 WORKDIR /opt/ska-src-mm-image-discovery-api
 
-ENV API_ROOT_PATH ''
-ENV API_SCHEME ''
-ENV IAM_CLIENT_CONF_URL ''
-ENV API_IAM_CLIENT_ID ''
-ENV API_IAM_CLIENT_SECRET ''
-ENV API_IAM_CLIENT_SCOPES ''
-ENV API_IAM_CLIENT_AUDIENCE ''
-ENV PERMISSIONS_API_URL ''
-ENV PERMISSIONS_SERVICE_NAME ''
-ENV PERMISSIONS_SERVICE_VERSION ''
-
 ENTRYPOINT ["/bin/bash", "etc/docker/init.sh"]

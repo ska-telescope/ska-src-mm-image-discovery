@@ -57,33 +57,11 @@ class CustomException(Exception):
     """
     pass
 
-
-class IAMEndpointNotFoundInWellKnown(CustomException):
-    def __init__(self, endpoint):
-        self.message = "Error setting IAM {} endpoint, not found in .well_known".format(endpoint)
-        super().__init__(self.message)
-
-
 class CustomHTTPException(Exception):
     """ Class that all custom HTTP exceptions must inherit in order for exception to be caught by
     the handle_exceptions decorator.
     """
     pass
-
-
-class ClientNotDefinedError(CustomHTTPException):
-    def __init__(self, client_name, exception):
-        self.message = "Client {} is not available: {}".format(client_name, exception)
-        self.http_error_status = status.HTTP_500_INTERNAL_SERVER_ERROR
-        super().__init__(self.message)
-
-
-class ClientTokenError(CustomHTTPException):
-    def __init__(self, client_name, exception):
-        self.message = "Error getting {} client service token: {}".format(client_name, exception)
-        self.http_error_status = status.HTTP_500_INTERNAL_SERVER_ERROR
-        super().__init__(self.message)
-
 
 class PermissionDenied(CustomHTTPException):
     def __init__(self):
