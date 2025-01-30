@@ -1,36 +1,32 @@
-.idea
+# Python virtual environment
+venv/
 
+# Byte-compiled/optimized/DLL files
+__pycache__/
+*.py[cod]
 
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Unit test/coverage reports
+tests/unittests/reports
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+coverage.xml
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+# Temporary developer scripts
+dev_scripts
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# Sphinx documentation
+docs/_build
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# Distribution/packaging
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+dist/
+*.egg-info/
 
-### VS Code ###
-.vscode/
+docker-compose.local.yml
+.env
+etc/helm/values.yaml
+
+# IDE
+.idea 

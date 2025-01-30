@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: ska-src-mm-image-discovery
-
-server:
-  port: ${APPLICATION_PORT:8080}

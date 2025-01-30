@@ -1,17 +1,17 @@
 image: docker:git
 services:
-  - docker:dind
+- docker:dind
 
 stages:
-  - test
+- test
 
-test-service:
-  image:
-    name: openjdk:21-jdk-slim
-    entrypoint: [ "" ]
-  before_script:
-    - export JAVA_HOME=/usr/local/openjdk-21
+test-init:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   stage: test
   script:
-    - ./mvnw dependency:go-offline
-    - ./mvnw test
+    - apk add --no-cache python3 py3-pip bash make
+    - python3 -m pip install jinjanator --break-system-packages
+    - make init API_NAME=test
+    - cd ../ska-src-test-api && docker-compose up -d
+    - docker exec test-core /bin/bash -c "cd src && python3 -m pytest ../tests"

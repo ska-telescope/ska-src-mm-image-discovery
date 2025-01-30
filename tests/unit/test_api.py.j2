@@ -1,0 +1,28 @@
+from fastapi.testclient import TestClient
+from unittest import TestCase
+import os
+
+class TestApiEndpoints(TestCase):
+    @classmethod
+    def setUpClass(self):
+        os.mkdir("static")
+        try:
+            from {{ python_package_name }}.rest.server import app
+        except:
+            os.rmdir("static")
+            raise
+        self.testclient = TestClient(app)
+
+    @classmethod
+    def tearDownClass(self):
+        os.rmdir("static")
+
+    def test_ping(self):
+        response = self.testclient.get("/v1/ping")
+        self.assertEqual(response.json(), {'status': 'UP', 'version': None})
+        self.assertEqual(response.status_code, 200)
+
+    def test_404_not_found(self):
+        response = self.testclient.get("/doesnotexist")
+        self.assertEqual(response.status_code, 404)
+
