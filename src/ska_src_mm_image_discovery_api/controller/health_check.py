@@ -2,7 +2,7 @@ import os
 
 from starlette.responses import JSONResponse
 
-from ska_src_mm_image_discovery_api.decorators.singleton import singleton
+from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 
 
 @singleton
