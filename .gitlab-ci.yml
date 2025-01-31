@@ -3,43 +3,11 @@ services:
 - docker:dind
 
 stages:
-- build
-- deploy
+  - test
 
-variables:
-  API_IMAGE_NAME: $CI_REGISTRY_IMAGE/api
-  GIT_SUBMODULE_STRATEGY: recursive
-
-build-api:
-  only:
-    - main
-  stage: build
+unit-tests:
+  stage: test
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build . -f Dockerfile --tag $API_IMAGE_NAME:mm-image-discovery.srcdev.skao.int
-    - docker push $API_IMAGE_NAME:mm-image-discovery.srcdev.skao.int
-
-helm-publish:
-  only:
-    - main
-  stage: deploy
-  image:
-    name: alpine/helm:latest
-    entrypoint: [""]
-  script:
-    - helm repo add --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD repo ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/stable
-    - helm package etc/helm
-    - export CHART_NAME=`ls | grep ska-src-mm-image-discovery-api*.tgz`
-    - helm plugin install https://github.com/chartmuseum/helm-push
-    - helm cm-push $CHART_NAME repo
-
-pypi-publish:
-  only:
-    - main
-  stage: deploy
-  image:
-    name: python:latest
-  script:
-    - pip install build twine
-    - python -m build
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - apk add --no-cache python3 py3-pip
+    - python3 -m pip install -r requirements.txt --break-system-packages
+    - python3 -m pytest -v
