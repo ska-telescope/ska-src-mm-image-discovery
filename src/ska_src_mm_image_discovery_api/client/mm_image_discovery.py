@@ -1,6 +1,6 @@
 import requests
 
-from ska_src_mm_image_discovery_api.common.exceptions import handle_client_exceptions
+from common.exceptions import handle_client_exceptions
 
 
 class MmImageDiscoveryClient:
