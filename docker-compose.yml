@@ -1,11 +1,11 @@
 version: "3.5"
 services:
-  core:
-    container_name: mm-image-discovery-core
-    image: mm-image-discovery-core:latest
+  ska-src-mm-image-discovery-api:
+    container_name: ska-src-mm-image-discovery-api
+    image: ska-src-mm-image-discovery-api:latest
     build:
       context: .
       dockerfile: Dockerfile
     environment: { }
     ports:
-      - 8080:8080
+      - "8080:8080"
