@@ -1,12 +1,9 @@
-import os
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_versioning import VersionedFastAPI, version
-from starlette.responses import JSONResponse
 
 from src.ska_src_mm_image_discovery_api.controller.health_check import HealthCheckController
-# from src.ska_src_mm_image_discovery_api.decorators import handle_exceptions
+from src.ska_src_mm_image_discovery_api.decorators.exceptions import handle_exceptions
 
 app = FastAPI()
 
@@ -18,9 +15,11 @@ CORSMiddleware_params = {
     "allow_methods": ["*"],
     "allow_headers": ["*"]
 }
+
+
 @app.get('/ping')
-# @handle_exceptions
 @version(1)
+@handle_exceptions
 async def ping():
     """ Service aliveness. """
     resp = await health_check_controller.ping()

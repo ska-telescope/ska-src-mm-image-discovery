@@ -1,7 +1,8 @@
 import traceback
+import requests
 from functools import wraps
 
-import requests
+
 from fastapi import HTTPException
 
 from src.ska_src_mm_image_discovery_api.common.exceptions import CustomException, CustomHTTPException
