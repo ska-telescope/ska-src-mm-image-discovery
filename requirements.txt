@@ -16,3 +16,5 @@ uvicorn==0.20.0
 uvloop==0.21.0
 watchfiles==1.0.4
 websockets==14.2
+
+pymongo~=4.11
