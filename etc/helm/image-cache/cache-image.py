@@ -10,7 +10,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 harbor_hosts = os.getenv('HARBOR_HOST', 'images.canfar.net').split()
 print(f"Harbor hosts: {harbor_hosts}")
-print(f"Mongo URI: {os.getenv('MONGO_URI')}")
 
 # MongoDB connection
 mongo_db_uri = os.getenv('MONGO_URI', 'mongodb://root:password@localhost:27017/?authSource=admin')

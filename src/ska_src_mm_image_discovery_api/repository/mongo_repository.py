@@ -1,5 +1,3 @@
-import asyncio
-
 from pymongo import AsyncMongoClient
 from pymongo.errors import ConnectionFailure
 
@@ -28,3 +26,9 @@ class MongoRepository:
     async def connection_status(self) -> str:
         server_info = await self.client.server_info()
         return server_info.get("ok")
+
+    async def get_all_metadata(self):
+        metadata_list = []
+        async for cursor in self.collection.find():
+            metadata_list.append(cursor)
+        return metadata_list
