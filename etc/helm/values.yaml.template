@@ -1,4 +1,12 @@
 image_registry_url: registry.gitlab.com/ska-telescope/src/src-service-apis/ska-src-mm-image-discovery-api/api
 image_tag: mm-image-discovery.srcdev.skao.int
 
+deployment:
+   namespace: image-discovery
 
+  imageCache:
+    refreshSchedule: "*/5 * * * *" # Every 5 minutes
+    registryHost: "images.canfar.net"
+
+  mongodb:
+    uri: "mongodb://mongodb:27017"

@@ -1,0 +1,73 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-image-caching-cronjob
+  namespace: {{ .Values.deployment.namespace }}
+spec:
+  schedule: {{ .Values.deployment.imageCache.refreshSchedule | toString | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: image-caching-cronjob
+              image: python:3.13
+              command: ["/bin/sh", "-c"]
+              args:
+              - |
+                pip3 install -r /config/requirements.txt && python3 /config/cache-image.py
+              env:
+                - name: MONGO_URI
+                  value: {{ .Values.deployment.mongodb.uri }}
+                - name: HARBOR_HOST
+                  value: "{{ .Values.deployment.imageCache.registryHost }}"
+              volumeMounts:
+                - name: config-volume
+                  mountPath: /config
+          volumes:
+            - name: config-volume
+              configMap:
+                  name: image-caching-config
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: image-caching-config
+  namespace: {{ .Values.deployment.namespace }}
+data:
+  {{- (.Files.Glob "image-cache/*").AsConfig | nindent 2 }}
+
+---
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-image-caching-job
+  namespace: {{ .Values.deployment.namespace }}
+
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: image-caching-cronjob
+          image: python:3.13
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              pip3 install -r /config/requirements.txt && python3 /config/cache-image.py
+          env:
+            - name: MONGO_URI
+              value: {{ .Values.deployment.mongodb.uri }}
+            - name: HARBOR_HOST
+              value: "{{ .Values.deployment.imageCache.registryHost }}"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: image-caching-config
+---
