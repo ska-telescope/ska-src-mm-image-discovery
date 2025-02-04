@@ -1,3 +1,5 @@
+import os
+
 import requests
 import urllib3
 from pymongo import MongoClient, ASCENDING
@@ -5,14 +7,18 @@ from pymongo import MongoClient, ASCENDING
 # Suppress only the single InsecureRequestWarning from urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# MongoDB connection
-# mongo_client = MongoClient(os.getenv('MONGO_URI'))
-mongo_client = MongoClient('mongodb://localhost:27017/')
-db = mongo_client['image_cache']
-collection = db['images']
 
-# harbor_hosts = os.getenv('HARBOR_HOST').split()
-harbor_hosts = ['images.canfar.net']
+harbor_hosts = os.getenv('HARBOR_HOST', 'images.canfar.net').split()
+print(f"Harbor hosts: {harbor_hosts}")
+
+# MongoDB connection
+mongo_db_uri = os.getenv('MONGO_URI', 'mongodb://root:password@localhost:27017/?authSource=admin')
+mongo_db_name = os.getenv('MONGO_DB_NAME', 'metadata_db')
+collection_name = os.getenv('MONGO_COLLECTION_NAME', 'images')
+
+mongo_client = MongoClient(mongo_db_uri)
+db = mongo_client[mongo_db_name]
+collection = db[collection_name]
 
 # Check if MongoDB instance is available
 try:
