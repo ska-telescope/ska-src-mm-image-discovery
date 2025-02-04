@@ -11,28 +11,28 @@ services:
         - action: rebuild
           path: src
     environment:
-      - MONGO_URI=mongodb://root:password@mongodb:27017/metadata_db?authSource=admin
+      - MONGO_URI=mongodb://root:password@mongodb:27017/?authSource=admin
     ports:
       - "8080:8080"
     networks:
       - app-network
-#  mongodb:
-#    image: mongo:latest
-#    container_name: mongodb
-#    environment:
-#      - MONGO_INITDB_ROOT_USERNAME=root
-#      - MONGO_INITDB_ROOT_PASSWORD=password
-#      - MONGO_INITDB_DATABASE=metadata_db
-#    volumes:
-#      - mongodb_data:/data/db
-#    command:
-#      - --storageEngine
-#      - wiredTiger
-#      - --auth
-#    ports:
-#      - "27017:27017"
-#    networks:
-#      - app-network
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=metadata_db
+    volumes:
+      - mongodb_data:/data/db
+    command:
+      - --storageEngine
+      - wiredTiger
+      - --auth
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
 
 volumes:
   mongodb_data:
