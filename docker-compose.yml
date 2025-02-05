@@ -35,6 +35,8 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
 
 networks:
   app-network:
+    driver: bridge
