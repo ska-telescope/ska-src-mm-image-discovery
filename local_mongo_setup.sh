@@ -19,3 +19,6 @@ docker ps -a --format '{{.Names}}' | grep -w mongodb >/dev/null 2>&1 || docker r
 mongo --auth
 
 
+# sh local_mongo_setup.sh
+# python3.13 etc/helm/image-cache/cache-image.py
+# uvicorn src.ska_src_mm_image_discovery_api.rest.server:app --reload --host 127.0.0.1 --port 8000
