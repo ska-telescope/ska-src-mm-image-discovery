@@ -1,49 +1,26 @@
 import os
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import MongoClient
 
+from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
+
+
+@singleton
 class MongoConfig:
 
-    def __init__(self, async_mode: bool = False):
-        self.uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
-        self.db_name = os.getenv('MONGO_DB_NAME', 'mydatabase')
-        self.admin_password = os.getenv('MONGO_ADMIN_PASSWORD', 'default_password')
+    def __init__(self, uri: str, db_name: str, collection_name: str):
+        self.uri = uri
+        self.db_name = db_name
+        self.collection_name = collection_name
 
-        self.async_mode = async_mode
-        self.client = None
-        self.async_client = None
-        self.db = None
-        self.collection = None
+    @property
+    def URI(self) -> str:
+        return self.uri
 
-    def connect(self):
-        try:
-            if self.async_mode:
-                self.async_client = AsyncIOMotorClient(self.uri)
-                self.db = self.async_client[self.db_name]
-            else:
-                self.client = MongoClient(self.uri)
-                self.db = self.client[self.db_name]
-            print("Connected to MongoDB")
-        except Exception as e:
-            print(f"Failed to connect to MongoDB: {e}")
+    @property
+    def DB(self) -> str:
+        return self.db_name
 
-    def close(self):
-        try:
-            if self.async_mode and self.async_client:
-                self.async_client.close()
-            elif self.client:
-                self.client.close()
-            print("MongoDB connection closed")
-        except Exception as e:
-            print(f"Failed to close MongoDB connection: {e}")
+    @property
+    def Collection(self) -> str:
+        return self.collection_name
 
-    def check_connection(self):
-        try:
-            if self.async_mode:
-                server_info = self.async_client.server_info()
-            else:
-                server_info = self.client.server_info()
-            return "UP" if server_info.get("ok") == 1 else "DOWN"
-        except Exception as e:
-            return str(e)
 

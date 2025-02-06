@@ -1,8 +1,8 @@
 from pymongo import AsyncMongoClient
 from pymongo.errors import ConnectionFailure
 
+from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
-from src.ska_src_mm_image_discovery_api.models.mongo_config import MongoConfig
 
 
 @singleton
@@ -25,7 +25,7 @@ class MongoRepository:
 
     async def connection_status(self) -> str:
         server_info = await self.client.server_info()
-        return server_info.get("ok")
+        return "UP" if server_info.get("ok") == 1 else "DOWN"
 
     async def get_all_metadata(self):
         metadata_list = []

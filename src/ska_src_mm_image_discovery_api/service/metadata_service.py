@@ -12,12 +12,6 @@ class MetadataService:
         image_metadata_list = []
         documents = await self.mongo_repository.get_all_metadata()
         for document in documents:
-            image_metadata = ImageMetadata(
-                image_id=document['image_id'],
-                author_name=document['author_name'],
-                types=document['types'],
-                tag=document['tag'],
-                digest=document['digest']
-            )
-            image_metadata_list.append(image_metadata.to_dict())
+            image_metadata = ImageMetadata(**document)
+            image_metadata_list.append(image_metadata)
         return image_metadata_list
