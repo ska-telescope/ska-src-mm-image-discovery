@@ -29,6 +29,16 @@ class MongoRepository:
 
     async def get_all_metadata(self):
         metadata_list = []
-        async for cursor in self.collection.find():
-            metadata_list.append(cursor)
+        # async for cursor in self.collection.find():
+        #     metadata_list.append(cursor)
+        # return metadata_list
+        metadata_list = await self.collection.find().to_list(length=None)
         return metadata_list
+
+    async def get_all_metadata_by_type(self , type_name: str) -> list:
+        return await self.collection.find({'types' : type_name}).to_list(length=None)
+
+    async def get_metadata_by_image_id(self , image_id : str) -> dict:
+        return await self.collection.find_one({'image_id' : image_id})
+
+
