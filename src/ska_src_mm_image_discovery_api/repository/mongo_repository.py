@@ -15,8 +15,6 @@ class MongoRepository:
 
     async def ping(self):
         try:
-            # Explicitly connect to the MongoDB server
-            # await self.client.aconnect()
             await self.client.admin.command('ping')
             print("Successfully connected to MongoDB!")
 
@@ -27,12 +25,9 @@ class MongoRepository:
         server_info = await self.client.server_info()
         return "UP" if server_info.get("ok") == 1 else "DOWN"
 
-    async def get_all_metadata(self):
-        metadata_list = await self.collection.find().to_list(length=None)
+    async def get_all_metadata(self, metadata_filter: dict) -> list:
+        metadata_list = await self.collection.find(metadata_filter).to_list(length=None)
         return metadata_list
-
-    async def get_all_metadata_by_type(self , type_name: str) -> list:
-        return await self.collection.find({'types' : type_name}).to_list(length=None)
 
     async def get_metadata_by_image_id(self , image_id : str) -> dict:
         return await self.collection.find_one({'image_id' : image_id})

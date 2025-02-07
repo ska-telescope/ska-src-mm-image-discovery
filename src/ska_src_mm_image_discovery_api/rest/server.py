@@ -31,10 +31,16 @@ async def health(health_check_controller=Depends(get_health_check_controller)):
 @app.get('/image/search', tags=["Image Metadata"], response_model=list[ImageMetadata])
 @version(1)
 @handle_exceptions
-async def image_search(type_name: str | None, image_id=str | None,
-                       metadata_controller=Depends(get_metadata_controller)):
+async def image_search(
+        type_name: str | None = None,
+        image_id: str | None = None,
+        metadata_controller=Depends(get_metadata_controller)
+):
     """ Get metadata list """
-    return await metadata_controller.get_image_metadata_list({'type_name': type_name, 'image_id': image_id})
+    return await metadata_controller.get_image_metadata_list({
+        'type_name': type_name,
+        'image_id': image_id
+    })
 
 app = VersionedFastAPI(app, version_format='{major}', prefix_format='/v{major}')
 app.add_middleware(CORSMiddleware, **CORSMiddleware_params)
