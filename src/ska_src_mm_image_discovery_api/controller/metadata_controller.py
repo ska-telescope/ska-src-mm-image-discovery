@@ -14,14 +14,13 @@ class MetadataController:
     def __init__(self, metadata_service: MetadataService):
         self.metadata_service = metadata_service
 
-    async def get_image_metadata_list(self) -> JSONResponse:
+    async def get_image_metadata_list(self , query_params : dict  ) -> JSONResponse:
+        if query_params.get('type_name') is not None :
+            metadata_list = await self.metadata_service.get_all_metadata_by_type(query_params.get('type_name'))
+            return JSONResponse(content=jsonable_encoder(metadata_list))
+        if query_params.get('image_id') is not None :
+            metadata = await self.metadata_service.get_metadata_by_image_id(query_params.get('image_id'))
+            return JSONResponse(content=jsonable_encoder(metadata))
         metadata_list = await self.metadata_service.get_all_metadata()
         return JSONResponse(content=jsonable_encoder(metadata_list))
 
-    async def get_image_metadata_list_by_type(self , type_name : str) -> JSONResponse :
-        metadata_list = await self.metadata_service.get_all_metadata_by_type(type_name)
-        return JSONResponse(content=jsonable_encoder(metadata_list))
-
-    async def get_image_metadata_by_image_id(self , image_id : str) -> JSONResponse :
-        metadata = await self.metadata_service.get_metadata_by_image_id(image_id)
-        return JSONResponse(content=jsonable_encoder(metadata))

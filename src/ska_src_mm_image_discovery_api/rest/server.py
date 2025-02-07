@@ -31,24 +31,10 @@ async def health(health_check_controller=Depends(get_health_check_controller)):
 @app.get('/image/search', tags=["Image Metadata"], response_model=list[ImageMetadata])
 @version(1)
 @handle_exceptions
-async def image_search(metadata_controller=Depends(get_metadata_controller)):
+async def image_search(type_name: str | None, image_id=str | None,
+                       metadata_controller=Depends(get_metadata_controller)):
     """ Get metadata list """
-    return await metadata_controller.get_image_metadata_list()
-
-@app.get('/image/search' , tags=["Image Metadata by type"] , response_model=list[ImageMetadata])
-@version(1)
-@handle_exceptions
-async def image_search_by_type(type_name: str, metadata_controller=Depends(get_metadata_controller)):
-    """ Get metadata list by type """
-    return await metadata_controller.get_image_metadata_list_by_type(type_name)
-
-@app.get('/image/search' , tags=["Image Metadata by image_id"] , response_model=ImageMetadata)
-@version(1)
-@handle_exceptions
-async def image_search_by_image_id(image_id: str, metadata_controller=Depends(get_metadata_controller)):
-    """ Get metadata list by id """
-    return await metadata_controller.get_image_metadata_by_image_id(image_id)
-
+    return await metadata_controller.get_image_metadata_list({'type_name': type_name, 'image_id': image_id})
 
 app = VersionedFastAPI(app, version_format='{major}', prefix_format='/v{major}')
 app.add_middleware(CORSMiddleware, **CORSMiddleware_params)

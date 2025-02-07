@@ -28,10 +28,6 @@ class MongoRepository:
         return "UP" if server_info.get("ok") == 1 else "DOWN"
 
     async def get_all_metadata(self):
-        metadata_list = []
-        # async for cursor in self.collection.find():
-        #     metadata_list.append(cursor)
-        # return metadata_list
         metadata_list = await self.collection.find().to_list(length=None)
         return metadata_list
 
