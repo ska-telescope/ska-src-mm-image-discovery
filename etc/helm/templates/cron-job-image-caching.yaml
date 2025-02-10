@@ -40,7 +40,6 @@ data:
   {{- (.Files.Glob "image-cache/*").AsConfig | nindent 2 }}
 
 ---
----
 apiVersion: batch/v1
 kind: Job
 metadata:

@@ -9,6 +9,7 @@ from src.ska_src_mm_image_discovery_api.repository.mongo_repository import Mongo
 from src.ska_src_mm_image_discovery_api.service.metadata_service import MetadataService
 
 
+@pytest.mark.asyncio
 class TestMetadataService:
     logger = logging.getLogger("uvicorn")
 
@@ -20,7 +21,6 @@ class TestMetadataService:
     def metadata_service(self, mongo_repository):
         return MetadataService.__cls__(mongo_repository)
 
-    @pytest.mark.asyncio
     async def test_get_all_metadata(self, metadata_service, mongo_repository):
         metadata_filter = {}
         expected_metadata = [
@@ -38,7 +38,6 @@ class TestMetadataService:
         assert result == expected_metadata
         mongo_repository.get_all_metadata.assert_called_once_with(metadata_filter)
 
-    @pytest.mark.asyncio
     async def test_get_all_metadata_by_type(self, metadata_service, mongo_repository):
         metadata_filter = {'type_name': 'type_1'}
         expected_metadata = [
@@ -54,7 +53,6 @@ class TestMetadataService:
         assert result == expected_metadata
         mongo_repository.get_all_metadata.assert_called_once_with({'types': 'type_1'})
 
-    @pytest.mark.asyncio
     async def test_get_metadata_by_image_id(self, metadata_service, mongo_repository):
         image_id = '1'
         expected_metadata = ImageMetadata(image_id='1', author_name='author_1', types=list('type_1'), digest='digest_1',
@@ -69,7 +67,6 @@ class TestMetadataService:
         assert result == expected_metadata
         mongo_repository.get_metadata_by_image_id.assert_called_once_with(image_id)
 
-    @pytest.mark.asyncio
     async def test_get_metadata_by_image_id_not_found(self, metadata_service, mongo_repository):
         image_id = 'non_existent_id'
 
