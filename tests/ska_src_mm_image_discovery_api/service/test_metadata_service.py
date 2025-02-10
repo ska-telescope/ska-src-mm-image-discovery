@@ -14,7 +14,7 @@ class TestMetadataService:
 
     @pytest.fixture(autouse=True)
     def mongo_repository(self):
-        return AsyncMock(MongoRepository.__cls__)
+        return AsyncMock(spec=MongoRepository.__cls__)
 
     @pytest.fixture(autouse=True)
     def metadata_service(self, mongo_repository):
