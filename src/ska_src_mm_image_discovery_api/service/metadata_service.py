@@ -1,3 +1,7 @@
+import logging
+
+from fastapi import HTTPException
+
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
@@ -5,6 +9,8 @@ from src.ska_src_mm_image_discovery_api.repository.mongo_repository import Mongo
 
 @singleton
 class MetadataService:
+    logger = logging.getLogger("uvicorn")
+
     def __init__(self, mongo_repository: MongoRepository):
         self.mongo_repository = mongo_repository
 
@@ -20,4 +26,7 @@ class MetadataService:
 
     async def get_metadata_by_image_id(self, image_id: str) -> ImageMetadata:
         document =  await self.mongo_repository.get_metadata_by_image_id(image_id)
+        if document is None:
+            self.logger.error(f"Image with id {image_id} not found")
+            raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
         return ImageMetadata(**document)
