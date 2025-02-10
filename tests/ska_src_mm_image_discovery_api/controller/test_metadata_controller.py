@@ -3,9 +3,8 @@ import pytest
 import json
 from src.ska_src_mm_image_discovery_api.controller.metadata_controller import MetadataController
 
-
+@pytest.mark.asyncio
 class TestMetadataController:
-    @pytest.mark.asyncio
     async def test_get_image_metadata_list_by_type(self):
         controller = MetadataController(AsyncMock())
 
@@ -37,7 +36,6 @@ class TestMetadataController:
         ]
         controller.metadata_service.get_all_metadata.assert_called_once_with(query_params)
 
-    @pytest.mark.asyncio
     async def test_get_image_metadata_when_image_id_is_present(self):
         controller = MetadataController(AsyncMock())
 

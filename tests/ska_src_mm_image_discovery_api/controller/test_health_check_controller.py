@@ -3,8 +3,8 @@ import pytest
 from src.ska_src_mm_image_discovery_api.controller.health_check_controller import HealthCheckController
 import json
 
+@pytest.mark.asyncio
 class TestHealthCheckController:
-    @pytest.mark.asyncio
     async def test_health_success(self):
         health_check_controller = HealthCheckController(AsyncMock())
         health_check_controller.mongo_repository.connection_status.return_value = "UP"
@@ -20,7 +20,6 @@ class TestHealthCheckController:
             'backend_connection': "UP"
         }
 
-    @pytest.mark.asyncio
     async def test_health_down(self):
         health_check_controller = HealthCheckController(AsyncMock())
         health_check_controller.mongo_repository.connection_status.return_value = "DOWN"
