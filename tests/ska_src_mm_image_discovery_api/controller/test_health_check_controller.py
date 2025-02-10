@@ -5,8 +5,12 @@ import json
 
 @pytest.mark.asyncio
 class TestHealthCheckController:
-    async def test_health_success(self):
-        health_check_controller = HealthCheckController(AsyncMock())
+
+    @pytest.fixture(autouse=True)
+    def health_check_controller(self):
+        return HealthCheckController(AsyncMock())
+
+    async def test_health_success(self, health_check_controller):
         health_check_controller.mongo_repository.connection_status.return_value = "UP"
 
         response = await health_check_controller.health()
@@ -20,8 +24,7 @@ class TestHealthCheckController:
             'backend_connection': "UP"
         }
 
-    async def test_health_down(self):
-        health_check_controller = HealthCheckController(AsyncMock())
+    async def test_health_down(self, health_check_controller):
         health_check_controller.mongo_repository.connection_status.return_value = "DOWN"
 
         response = await health_check_controller.health()
