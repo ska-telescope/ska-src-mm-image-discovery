@@ -14,3 +14,4 @@ deployment:
     pvcName: "metadata-discovery-pvc"
     pvName: "metadata-discovery-pv"
     hostPath: "/var/lib/k8s-pvs/science-platform"
+    enabled: true
