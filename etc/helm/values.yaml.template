@@ -1,17 +1,39 @@
-image_registry_url: registry.gitlab.com/ska-telescope/src/src-service-apis/ska-src-mm-image-discovery-api/api
-image_tag: mm-image-discovery.srcdev.skao.int
+
 
 deployment:
-   namespace: image-discovery
+  replicas: 1
+  namespace: ""
+  labels:
+    app: image-discovery
+    ivoa.service.name: ska-src-mm-image-discovery
+  image_registry_url: ""
+  image_tag: ""
 
   imageCache:
+    enabled: true
     refreshSchedule: "*/5 * * * *" # Every 5 minutes
-    registryHost: "images.canfar.net"
+    registryHost: ""
 
   mongodb:
-    uri: "mongodb://mongodb:27017"
-    name: "metadata-discovery"
-    pvcName: "metadata-discovery-pvc"
-    pvName: "metadata-discovery-pv"
-    hostPath: "/var/lib/k8s-pvs/science-platform"
     enabled: true
+    uri: "mongodb://mongodb:27017"
+    name: ""
+    pvcName: ""
+    pvName: ""
+    hostPath: ""
+
+
+httpRoute:
+  enabled: false
+  gatewayName: ""
+  host: "l"
+
+ingress:
+  enabled: false
+  ingressClassName: ""
+  host: "s
+
+service:
+  type: NodePort
+  port: 8080
+

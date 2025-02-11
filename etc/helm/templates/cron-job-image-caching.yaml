@@ -1,8 +1,11 @@
+{{- if .Values.deployment.imageCache.enabled }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-image-caching-cronjob
   namespace: {{ .Values.deployment.namespace }}
+  labels:
+  {{- toYaml .Values.deployment.labels | nindent 4 }}
 spec:
   schedule: {{ .Values.deployment.imageCache.refreshSchedule | toString | quote }}
   jobTemplate:
@@ -15,8 +18,8 @@ spec:
               image: python:3.13
               command: ["/bin/sh", "-c"]
               args:
-              - |
-                pip3 install -r /config/requirements.txt && python3 /config/cache-image.py
+                - |
+                  pip3 install -r /config/requirements.txt && python3 /config/cache-image.py
               env:
                 - name: MONGO_URI
                   value: {{ .Values.deployment.mongodb.uri }}
@@ -28,7 +31,7 @@ spec:
           volumes:
             - name: config-volume
               configMap:
-                  name: image-caching-config
+                name: image-caching-config
 ---
 
 apiVersion: v1
@@ -36,16 +39,20 @@ kind: ConfigMap
 metadata:
   name: image-caching-config
   namespace: {{ .Values.deployment.namespace }}
+  labels:
+  {{- toYaml .Values.deployment.labels | nindent 4 }}
 data:
   {{- (.Files.Glob "image-cache/*").AsConfig | nindent 2 }}
 
+---
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Release.Name }}-image-caching-job
   namespace: {{ .Values.deployment.namespace }}
-
+  labels:
+  {{- toYaml .Values.deployment.labels | nindent 4 }}
 spec:
   template:
     spec:
@@ -70,3 +77,4 @@ spec:
           configMap:
             name: image-caching-config
 ---
+{{- end }}
