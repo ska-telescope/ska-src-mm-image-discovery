@@ -38,7 +38,7 @@ spec:
       volumes:
         - name: mongodb-data
           persistentVolumeClaim:
-            claimName: mongodb-pvc
+            claimName: {{ .Values.deployment.mongodb.pvcName }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -65,5 +65,6 @@ spec:
         storage: 1Gi
     accessModes:
         - ReadWriteOnce
-    hostPath: {{.Values.deployment.mongodb.hostPath}}
+    hostPath:
+      path: {{.Values.deployment.mongodb.hostPath}}
 {{- end }}

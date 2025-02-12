@@ -1,4 +1,5 @@
 {{- if .Values.httpRoute.enabled }}
+---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -23,6 +24,7 @@ spec:
 {{- end }}
 
 {{- if .Values.ingress.enabled }}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
