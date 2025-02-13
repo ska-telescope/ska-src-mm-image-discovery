@@ -11,6 +11,8 @@ COPY --chown=user requirements.txt requirements.txt
 
 RUN python3 -m pip install -r requirements.txt --extra-index-url https://gitlab.com/api/v4/projects/48060714/packages/pypi/simple
 
+RUN apt-get update && apt-get install -y skopeo
+
 COPY --chown=user . .
 
 EXPOSE 8080

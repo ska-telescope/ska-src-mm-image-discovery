@@ -21,3 +21,7 @@ class MetadataController:
         metadata_list = await self.metadata_service.get_all_metadata(query_params)
         return JSONResponse(content=jsonable_encoder(metadata_list))
 
+
+    async def register_image(self, query_params : dict ) -> JSONResponse:
+        metadata = await self.metadata_service.register_metadata(query_params.get('image_url'))
+        return JSONResponse(content=jsonable_encoder(metadata))

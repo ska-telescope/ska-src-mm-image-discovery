@@ -42,5 +42,14 @@ async def image_search(
         'image_id': image_id
     })
 
+@app.post('/image/register', tags=["Image Metadata"], response_model=ImageMetadata)
+@version(1)
+@handle_exceptions
+async def register_image(image_url: str, metadata_controller=Depends(get_metadata_controller)):
+    """ Register image metadata """
+    return await metadata_controller.register_image({
+        'image_url': image_url
+    })
+
 app = VersionedFastAPI(app, version_format='{major}', prefix_format='/v{major}')
 app.add_middleware(CORSMiddleware, **CORSMiddleware_params)

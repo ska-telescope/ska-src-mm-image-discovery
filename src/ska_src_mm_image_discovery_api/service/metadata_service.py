@@ -2,6 +2,7 @@ import logging
 
 from fastapi import HTTPException
 
+from src.ska_src_mm_image_discovery_api.common.command_executor import CommandExecutor
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
@@ -30,3 +31,12 @@ class MetadataService:
             self.logger.error(f"Image with id {image_id} not found")
             raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
         return ImageMetadata(**document)
+
+    async def register_metadata(self, image_url: str) -> ImageMetadata:
+        result, err = CommandExecutor(f"skopeo inspect {image_url}").execute()
+        if err:
+            self.logger.error(f"Error while fetching metadata for image {image_url}")
+            raise HTTPException(status_code=500, detail=f"Error while fetching metadata for image {image_url}")
+
+        self.logger.info(result)
+        pass
