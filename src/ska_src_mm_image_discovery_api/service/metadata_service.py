@@ -35,40 +35,39 @@ class MetadataService:
 
 
     async def register_metadata(self, image_url: str) -> ImageMetadata:
-        result, err = CommandExecutor(f"skopeo inspect {image_url}").execute()
-        if err:
-            self.logger.error(f"Error while fetching metadata for image {image_url}")
+        try:
+            ## TODO - this can be a responsibility of Skepeo class.
+            result = CommandExecutor(f"skopeo inspect {image_url}").execute()
+        except Exception as err:
+            self.logger.error(f"Error while fetching metadata for image {image_url}", err)
             raise HTTPException(status_code=500, detail=f"Error while fetching metadata for image {image_url}")
 
-        image_metadata = await self.__parse_annotation(result)
-
+        image_metadata = await self.__parse_metadata(result)
+        self.logger.info(f"Registering image metadata for image {image_metadata.image_id}")
+        
         return await self.mongo_repository.register_image_metadata(image_metadata)
 
 
-    async def __parse_annotation(self, encoded_data) -> ImageMetadata:
+    async def __parse_metadata(self, encoded_data) -> ImageMetadata:
         result_dict = json.loads(encoded_data)
 
-        annotations = result_dict.get('Labels', {}).get('annotations', None)
+        annotations = result_dict.get('annotations', {})
         annotations_dict = json.loads(annotations)
-        decoded_metadata = await self.__decode_metadata(annotations_dict.get("image_metadata"))
 
-        # need to change to annotations section
-        author_name = annotations_dict.get('author', None)
-        image_digest = result_dict.get("Digest", None)
-        types = decoded_metadata.get("types", [])
-        image_id = decoded_metadata.get("image_id")
-        tag = decoded_metadata.get("tag", None)
+        ## TODO - keys can vary, need to handle this
+        decoded_metadata = self.__decode_metadata(annotations_dict.get("image.metadata"))
 
-        image_metadata = ImageMetadata(
-            image_id=image_id,
-            author_name=author_name,
-            types=types,
-            digest=image_digest,
-            tag=tag
+        return ImageMetadata(
+            image_id=decoded_metadata.get("image_id"),
+            author_name=decoded_metadata.get('author', None),
+            types=decoded_metadata.get("types", []),
+            digest=result_dict.get("Digest", None),
+            tag=decoded_metadata.get("tag", None)
         )
-        return image_metadata
 
+
+    ## TODO - this method can be moved to different class
     @staticmethod
-    async def __decode_metadata(encoded_data) -> dict:
+    def __decode_metadata(encoded_data) -> dict:
         decoded_data = base64.b64decode(encoded_data).decode('utf-8')
         return json.loads(decoded_data)

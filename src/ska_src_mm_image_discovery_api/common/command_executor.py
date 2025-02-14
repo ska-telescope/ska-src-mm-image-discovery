@@ -6,10 +6,13 @@ class CommandExecutor:
     def __init__(self, command):
         self.command = command
 
-    def execute(self) -> tuple[Any, Any] | tuple[str, str]:
+    def execute(self) -> str:
         try:
             result = subprocess.run(self.command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            return result.stdout, result.stderr
+            if result.stderr:
+                raise subprocess.CalledProcessError(result.returncode, result.stdout, result.stderr)
+            return result.stdout
+
         except subprocess.CalledProcessError as e:
-            return e.stdout, e.stderr
+            raise subprocess.CalledProcessError(e.returncode, e.stdout, e.stderr)
 
