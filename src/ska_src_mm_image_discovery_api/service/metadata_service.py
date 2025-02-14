@@ -1,9 +1,10 @@
+import base64
 import json
 import logging
-import base64
+
 from fastapi import HTTPException
 
-from src.ska_src_mm_image_discovery_api.common.command_executor import CommandExecutor
+from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
@@ -13,7 +14,8 @@ from src.ska_src_mm_image_discovery_api.repository.mongo_repository import Mongo
 class MetadataService:
     logger = logging.getLogger("uvicorn")
 
-    def __init__(self, mongo_repository: MongoRepository):
+    def __init__(self, mongo_repository: MongoRepository, skopeo: Skopeo):
+        self.skopeo = skopeo
         self.mongo_repository = mongo_repository
 
     async def get_all_metadata(self, metadata_filter: dict) -> list[ImageMetadata]:
@@ -35,35 +37,20 @@ class MetadataService:
 
 
     async def register_metadata(self, image_url: str) -> ImageMetadata:
-        try:
-            ## TODO - this can be a responsibility of Skepeo class.
-            result = CommandExecutor(f"skopeo inspect {image_url}").execute()
-        except Exception as err:
-            self.logger.error(f"Error while fetching metadata for image {image_url}", err)
-            raise HTTPException(status_code=500, detail=f"Error while fetching metadata for image {image_url}")
+        result = await self.skopeo.inspect(image_url)
+        ANNOTATIONS = "Labels"
+        IMAGE_METADATA = "annotations"
+        DIGEST = "Digest"
 
-        image_metadata = await self.__parse_metadata(result)
-        self.logger.info(f"Registering image metadata for image {image_metadata.image_id}")
-        
-        return await self.mongo_repository.register_image_metadata(image_metadata)
+        if ANNOTATIONS not in result or IMAGE_METADATA not in result.get(ANNOTATIONS):
+            self.logger.error(f"Image metadata not found for image {image_url}")
+            raise HTTPException(status_code=404, detail=f"Image metadata not found for image {image_url}")
 
-
-    async def __parse_metadata(self, encoded_data) -> ImageMetadata:
-        result_dict = json.loads(encoded_data)
-
-        annotations = result_dict.get('annotations', {})
-        annotations_dict = json.loads(annotations)
-
-        ## TODO - keys can vary, need to handle this
-        decoded_metadata = self.__decode_metadata(annotations_dict.get("image.metadata"))
-
-        return ImageMetadata(
-            image_id=decoded_metadata.get("image_id"),
-            author_name=decoded_metadata.get('author', None),
-            types=decoded_metadata.get("types", []),
-            digest=result_dict.get("Digest", None),
-            tag=decoded_metadata.get("tag", None)
-        )
+        ## TODO - keys can vary, need to handle this, check json loads is required or not
+        annotations = result.get(ANNOTATIONS)
+        digest = result.get(DIGEST)
+        metadata = self.__decode_metadata(annotations.get(IMAGE_METADATA))
+        return ImageMetadata(**metadata, digest=digest)
 
 
     ## TODO - this method can be moved to different class

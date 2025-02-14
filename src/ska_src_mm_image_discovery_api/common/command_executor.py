@@ -1,12 +1,11 @@
 import subprocess
-from typing import Any
 
 
 class CommandExecutor:
     def __init__(self, command):
         self.command = command
 
-    def execute(self) -> str:
+    async def execute(self) -> str:
         try:
             result = subprocess.run(self.command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.stderr:
@@ -15,4 +14,3 @@ class CommandExecutor:
 
         except subprocess.CalledProcessError as e:
             raise subprocess.CalledProcessError(e.returncode, e.stdout, e.stderr)
-

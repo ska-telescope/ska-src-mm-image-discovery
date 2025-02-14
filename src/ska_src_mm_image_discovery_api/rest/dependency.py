@@ -5,6 +5,7 @@ from fastapi import Depends
 from pymongo import AsyncMongoClient
 
 from src.ska_src_mm_image_discovery_api.client.mongo_client import MongoClient
+from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.controller.health_check_controller import HealthCheckController
 from src.ska_src_mm_image_discovery_api.controller.metadata_controller import MetadataController
@@ -35,11 +36,16 @@ def get_mongo_repository(
     return MongoRepository(mongo_config, mongo_client)
 
 
+# return a bean of Skopeo
+def get_skopeo() -> Skopeo:
+    return Skopeo()
+
 # return a bean of MetadataService
 def get_metadata_service(
-        mongo_repository: MongoRepository = Depends(get_mongo_repository)
+        mongo_repository: MongoRepository = Depends(get_mongo_repository),
+        skopeo: Skopeo = Depends(get_skopeo)
 ) -> MetadataService:
-    return MetadataService(mongo_repository)
+    return MetadataService(mongo_repository, skopeo)
 
 
 # return a bean of MetadataController
