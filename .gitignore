@@ -13,6 +13,7 @@ tests/unittests/reports
 .pytest_cache/
 htmlcov/
 .tox/
+utils
 coverage.xml
 
 # Temporary developer scripts

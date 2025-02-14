@@ -3,6 +3,7 @@ from pymongo.errors import ConnectionFailure
 
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
+from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 
 
 @singleton
@@ -29,7 +30,13 @@ class MongoRepository:
         metadata_list = await self.collection.find(metadata_filter).to_list(length=None)
         return metadata_list
 
-    async def get_metadata_by_image_id(self , image_id : str) -> dict:
-        return await self.collection.find_one({'image_id' : image_id})
+    async def get_metadata_by_image_id(self, image_id: str) -> dict:
+        return await self.collection.find_one({'image_id': image_id})
 
-
+    async def register_image_metadata(self, image_metadata: ImageMetadata) -> ImageMetadata:
+        await self.collection.update_one(
+            {'image_id': image_metadata.image_id},
+            {'$set': image_metadata.__dict__},
+            upsert=True
+        )
+        return image_metadata

@@ -1,5 +1,6 @@
+import json
 import logging
-
+import base64
 from fastapi import HTTPException
 
 from src.ska_src_mm_image_discovery_api.common.command_executor import CommandExecutor
@@ -26,11 +27,12 @@ class MetadataService:
         return image_metadata_list
 
     async def get_metadata_by_image_id(self, image_id: str) -> ImageMetadata:
-        document =  await self.mongo_repository.get_metadata_by_image_id(image_id)
+        document = await self.mongo_repository.get_metadata_by_image_id(image_id)
         if document is None:
             self.logger.error(f"Image with id {image_id} not found")
             raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
         return ImageMetadata(**document)
+
 
     async def register_metadata(self, image_url: str) -> ImageMetadata:
         result, err = CommandExecutor(f"skopeo inspect {image_url}").execute()
@@ -38,5 +40,35 @@ class MetadataService:
             self.logger.error(f"Error while fetching metadata for image {image_url}")
             raise HTTPException(status_code=500, detail=f"Error while fetching metadata for image {image_url}")
 
-        self.logger.info(result)
-        pass
+        image_metadata = await self.__parse_annotation(result)
+
+        return await self.mongo_repository.register_image_metadata(image_metadata)
+
+
+    async def __parse_annotation(self, encoded_data) -> ImageMetadata:
+        result_dict = json.loads(encoded_data)
+
+        annotations = result_dict.get('Labels', {}).get('annotations', None)
+        annotations_dict = json.loads(annotations)
+        decoded_metadata = await self.__decode_metadata(annotations_dict.get("image_metadata"))
+
+        # need to change to annotations section
+        author_name = annotations_dict.get('author', None)
+        image_digest = result_dict.get("Digest", None)
+        types = decoded_metadata.get("types", [])
+        image_id = decoded_metadata.get("image_id")
+        tag = decoded_metadata.get("tag", None)
+
+        image_metadata = ImageMetadata(
+            image_id=image_id,
+            author_name=author_name,
+            types=types,
+            digest=image_digest,
+            tag=tag
+        )
+        return image_metadata
+
+    @staticmethod
+    async def __decode_metadata(encoded_data) -> dict:
+        decoded_data = base64.b64decode(encoded_data).decode('utf-8')
+        return json.loads(decoded_data)
