@@ -16,7 +16,7 @@ class Skopeo:
 
     async def inspect(self, image_url: str) -> dict:
         try:
-            cmd = CommandExecutor(f"skopeo inspect docker://{image_url}")
+            cmd = CommandExecutor(f"skopeo inspect docker://{image_url} --tls-verify=false --raw")
             result = await cmd.execute()
             return json.loads(result)
         except Exception as err:
