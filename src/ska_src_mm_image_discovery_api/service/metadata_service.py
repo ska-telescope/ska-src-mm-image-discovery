@@ -38,8 +38,8 @@ class MetadataService:
 
     async def register_metadata(self, image_url: str) -> ImageMetadata:
         result = await self.skopeo.inspect(image_url)
-        ANNOTATIONS = "Labels"
-        IMAGE_METADATA = "annotations"
+        ANNOTATIONS = "annotations"
+        IMAGE_METADATA = "org.opencadc.image-metadata"
         DIGEST = "Digest"
 
         if ANNOTATIONS not in result or IMAGE_METADATA not in result.get(ANNOTATIONS):
@@ -48,9 +48,17 @@ class MetadataService:
 
         ## TODO - keys can vary, need to handle this, check json loads is required or not
         annotations = result.get(ANNOTATIONS)
-        digest = result.get(DIGEST)
+        digest = result.get(DIGEST, "DEFAULT_DIGEST")
         metadata = self.__decode_metadata(annotations.get(IMAGE_METADATA))
-        return ImageMetadata(**metadata, digest=digest)
+
+        ## TODO changes keys and introduce version+tag and name+image_url
+        return ImageMetadata(
+            image_id=metadata.get("Name"),
+            author_name=metadata.get("Author"),
+            types=metadata.get("Types"),
+            digest=digest,
+            tag=metadata.get("Version")
+        )
 
 
     ## TODO - this method can be moved to different class
