@@ -31,4 +31,7 @@ dist/
 etc/helm/values.yaml
 
 # IDE
-.idea 
+.idea
+
+## Test reports
+reports
