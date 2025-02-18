@@ -11,3 +11,8 @@ unit-tests:
     - apk add --no-cache python3 py3-pip
     - python3 -m pip install -r requirements.txt --break-system-packages
     - python3 -m pytest -v
+  artifacts:
+    untracked: false
+    when: on_success
+    access: all
+    expire_in: 30 days
