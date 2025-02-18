@@ -28,5 +28,5 @@ class Skopeo:
             result = await cmd.execute()
             return json.loads(result)
         except Exception as err:
-            self.logger.error(f"Error while fetching metadata for image {image_url}", err)
+            self.logger.error(f"Error while fetching metadata for image {image_url}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Error while fetching metadata for image {image_url}")
