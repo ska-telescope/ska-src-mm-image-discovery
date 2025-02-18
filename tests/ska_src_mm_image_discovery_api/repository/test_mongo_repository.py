@@ -8,6 +8,7 @@ from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.errors import ConnectionFailure
 
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
+from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 
 
@@ -103,3 +104,11 @@ class TestMongoRepository:
 
         assert result == {'image_id': '6', 'type_name': 'test'}
         mongo_collection.find_one.assert_called_once_with({'image_id': image_id})
+
+    async def test_register_image_metadata_success(self , mongo_repository , async_mongo_client , mongo_collection):
+        image_metadata = ImageMetadata(image_id='1', author_name='author_1', types=['type_1'], digest='digest_1', tag='1')
+
+        return_value = await mongo_repository.register_image_metadata(image_metadata)
+
+        mongo_collection.update_one.assert_called_once_with({'image_id': '1'}, {'$set': image_metadata.__dict__}, upsert=True)
+        assert return_value == {'image_id':'1', 'author_name':'author_1', 'types':['type_1'] ,'digest':'digest_1', 'tag':'1'}

@@ -55,3 +55,21 @@ class TestMetadataController:
         }
 
         metadata_controller.metadata_service.get_metadata_by_image_id.assert_called_once_with("image_id")
+
+
+    async def test_register_image(self, metadata_controller):
+        metadata_controller.metadata_service.register_metadata = AsyncMock(return_value={
+            "image_id": "images.canfar.net/canfar/3.12:v0.1.1",
+            "author_name": "mockauthor"
+        })
+
+        query_params = {'image_url': 'image_url'}
+        response = await metadata_controller.register_image(query_params)
+        json_response = json.loads(response.body.decode("utf-8"))
+
+        assert json_response == {
+            "image_id": "images.canfar.net/canfar/3.12:v0.1.1",
+            "author_name": "mockauthor"
+        }
+
+        metadata_controller.metadata_service.register_metadata.assert_called_once_with("image_url")
