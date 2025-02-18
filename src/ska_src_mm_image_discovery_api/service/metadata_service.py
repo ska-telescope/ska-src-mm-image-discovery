@@ -35,7 +35,6 @@ class MetadataService:
             raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
         return ImageMetadata(**document)
 
-
     async def register_metadata(self, image_url: str) -> ImageMetadata:
         result = await self.skopeo.inspect(image_url)
         ANNOTATIONS = "annotations"
@@ -59,7 +58,6 @@ class MetadataService:
             digest=digest,
             tag=metadata.get("Version")
         )
-
 
     ## TODO - this method can be moved to different class
     @staticmethod

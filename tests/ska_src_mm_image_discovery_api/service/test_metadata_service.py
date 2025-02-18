@@ -1,6 +1,7 @@
 import logging
 from unittest.mock import AsyncMock
 
+from mock import Mock
 import pytest
 from fastapi import HTTPException
 
@@ -17,9 +18,10 @@ class TestMetadataService:
     def mongo_repository(self):
         return AsyncMock(spec=MongoRepository.__cls__)
 
+
     @pytest.fixture(autouse=True)
     def metadata_service(self, mongo_repository):
-        return MetadataService.__cls__(mongo_repository)
+        return MetadataService.__cls__(mongo_repository, Mock())
 
     async def test_get_all_metadata(self, metadata_service, mongo_repository):
         metadata_filter = {}
