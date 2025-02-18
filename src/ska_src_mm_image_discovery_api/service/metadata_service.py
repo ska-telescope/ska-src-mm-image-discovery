@@ -48,7 +48,7 @@ class MetadataService:
             self.logger.error(f"Image metadata not found for image {image_url}")
             raise HTTPException(status_code=404, detail=f"Image metadata not found for image {image_url}")
 
-        ## TODO - keys can vary, need to handle this, check json loads is required or not
+        ## TODO - keys can vary, need to handle this
         annotations = result.get(self.annotation_key)
         digest = result.get(self.digest_key, "DEFAULT_DIGEST")
         metadata = self.__decode_metadata(annotations.get(self.metadata_key))
