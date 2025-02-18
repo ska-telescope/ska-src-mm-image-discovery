@@ -1,7 +1,6 @@
 import logging
 from unittest.mock import AsyncMock, Mock
 
-from mock import Mock
 import pytest
 from fastapi import HTTPException
 
