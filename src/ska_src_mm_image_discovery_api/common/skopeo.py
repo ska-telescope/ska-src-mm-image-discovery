@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 
@@ -15,8 +16,15 @@ class Skopeo:
         pass
 
     async def inspect(self, image_url: str) -> dict:
+        results = await asyncio.gather(
+            self.__inspect(image_url, "--tls-verify=false --raw"),
+            self.__inspect(image_url, "--tls-verify=false")
+        )
+        return {**results[0], **results[1]}
+
+    async def __inspect(self, image_url: str, options: str) -> dict:
         try:
-            cmd = CommandExecutor(f"skopeo inspect docker://{image_url} --tls-verify=false --raw")
+            cmd = CommandExecutor(f"skopeo inspect docker://{image_url} {options}")
             result = await cmd.execute()
             return json.loads(result)
         except Exception as err:
