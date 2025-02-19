@@ -19,7 +19,7 @@ class MetadataService:
         self.skopeo = skopeo
         self.mongo_repository = mongo_repository
         self.annotation_key = os.getenv("ANNOTATION_KEY", "annotations")
-        self.metadata_key = os.getenv("METADATA_KEY", "org.opencadc.image-metadata")
+        self.metadata_key = os.getenv("METADATA_KEY", "org.opencadc.image.metadata")
         self.digest_key = os.getenv("DIGEST_KEY", "Digest")
 
 
@@ -42,7 +42,7 @@ class MetadataService:
 
     async def register_metadata(self, image_url: str) -> ImageMetadata:
         result = await self.skopeo.inspect(image_url)
-        self.logger.info(f"Image metadata found for image {image_url} is {result}")
+        self.logger.debug(f"Image metadata found for image {image_url} is {result}")
 
         if self.annotation_key not in result or self.metadata_key not in result.get(self.annotation_key):
             self.logger.error(f"Image metadata not found for image {image_url}")
@@ -55,7 +55,8 @@ class MetadataService:
 
         ## TODO changes keys and introduce version+tag and name+image_url
         image_metadata = ImageMetadata(
-            image_id=metadata.get("Name"),
+            image_id=image_url,
+            name=metadata.get("Name"),
             author_name=metadata.get("Author"),
             types=metadata.get("Types"),
             digest=digest,

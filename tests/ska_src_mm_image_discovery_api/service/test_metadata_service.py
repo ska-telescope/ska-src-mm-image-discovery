@@ -21,13 +21,17 @@ class TestMetadataService:
     async def test_get_all_metadata(self, metadata_service):
         metadata_filter = {}
         expected_metadata = [
-            ImageMetadata(image_id='1', author_name='author_1', types=list('type_1'), digest='digest_1', tag='1'),
-            ImageMetadata(image_id='2', author_name='author_2', types=list('type_2'), digest='digest_2', tag='1')
+            ImageMetadata(image_id='1', name='name-1', author_name='author_1', types=list('type_1'), digest='digest_1',
+                          tag='1'),
+            ImageMetadata(image_id='2', name='name-2', author_name='author_2', types=list('type_2'), digest='digest_2',
+                          tag='1')
         ]
 
         metadata_service.mongo_repository.get_all_metadata.return_value = [
-            {'image_id': '1', 'author_name': 'author_1', 'types': list('type_1'), 'digest': 'digest_1', 'tag': '1'},
-            {'image_id': '2', 'author_name': 'author_2', 'types': list('type_2'), 'digest': 'digest_2', 'tag': '1'}
+            {'image_id': '1', 'name': 'name-1', 'author_name': 'author_1', 'types': list('type_1'),
+             'digest': 'digest_1', 'tag': '1'},
+            {'image_id': '2', 'name': 'name-2', 'author_name': 'author_2', 'types': list('type_2'),
+             'digest': 'digest_2', 'tag': '1'}
         ]
 
         result = await metadata_service.get_all_metadata(metadata_filter)
@@ -38,11 +42,13 @@ class TestMetadataService:
     async def test_get_all_metadata_by_type(self, metadata_service):
         metadata_filter = {'type_name': 'type_1'}
         expected_metadata = [
-            ImageMetadata(image_id='1', author_name='author_1', types=list('type_1'), digest='digest_1', tag='1'),
+            ImageMetadata(image_id='1', name='name-1', author_name='author_1', types=list('type_1'), digest='digest_1',
+                          tag='1'),
         ]
 
         metadata_service.mongo_repository.get_all_metadata.return_value = [
-            {'image_id': '1', 'author_name': 'author_1', 'types': list('type_1'), 'digest': 'digest_1', 'tag': '1'},
+            {'image_id': '1', 'name': 'name-1', 'author_name': 'author_1', 'types': list('type_1'),
+             'digest': 'digest_1', 'tag': '1'},
         ]
 
         result = await metadata_service.get_all_metadata(metadata_filter)
@@ -52,10 +58,12 @@ class TestMetadataService:
 
     async def test_get_metadata_by_image_id(self, metadata_service):
         image_id = '1'
-        expected_metadata = ImageMetadata(image_id='1', author_name='author_1', types=list('type_1'), digest='digest_1',
+        expected_metadata = ImageMetadata(image_id='1', name='name-1', author_name='author_1', types=list('type_1'),
+                                          digest='digest_1',
                                           tag='1')
 
         metadata_service.mongo_repository.get_metadata_by_image_id.return_value = {'image_id': '1',
+                                                                                   'name': 'name-1',
                                                                                    'author_name': 'author_1',
                                                                                    'types': list('type_1'),
                                                                                    'digest': 'digest_1',
@@ -81,7 +89,7 @@ class TestMetadataService:
     async def test_register_metadata(self, metadata_service):
         image_url = 'image_url'
         annotations = {
-            'Name': 'image_id',
+            'Name': 'name-1',
             'Author': 'author_name',
             'Types': ['type_1', 'type_2'],
             'Version': '1',
@@ -89,12 +97,13 @@ class TestMetadataService:
 
         metadata_service.skopeo.inspect.return_value = {
             'annotations': {
-                'org.opencadc.image-metadata': base64.b64encode(json.dumps(annotations).encode('utf-8')),
+                'org.opencadc.image.metadata': base64.b64encode(json.dumps(annotations).encode('utf-8')),
             },
             'Digest': 'digest'
         }
 
-        image_metadata = ImageMetadata(image_id='image_id',
+        image_metadata = ImageMetadata(image_id='image_url',
+                                       name='name-1',
                                        author_name='author_name',
                                        types=['type_1', 'type_2'],
                                        digest='digest',
@@ -141,7 +150,7 @@ class TestMetadataService:
     async def test_register_metadata_no_digest_key(self, metadata_service):
         image_url = 'image_url'
         annotations = {
-            'Name': 'image_id',
+            'Name': 'name-1',
             'Author': 'author_name',
             'Types': ['type_1', 'type_2'],
             'Version': '1',
@@ -149,11 +158,12 @@ class TestMetadataService:
 
         metadata_service.skopeo.inspect.return_value = {
             'annotations': {
-                'org.opencadc.image-metadata': base64.b64encode(json.dumps(annotations).encode('utf-8')),
+                'org.opencadc.image.metadata': base64.b64encode(json.dumps(annotations).encode('utf-8')),
             }
         }
 
-        image_metadata = ImageMetadata(image_id='image_id',
+        image_metadata = ImageMetadata(image_id='image_url',
+                                       name='name-1',
                                        author_name='author_name',
                                        types=['type_1', 'type_2'],
                                        digest='DEFAULT_DIGEST',

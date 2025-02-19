@@ -1,3 +1,5 @@
+import logging
+
 from pymongo import AsyncMongoClient
 from pymongo.errors import ConnectionFailure
 
@@ -8,6 +10,7 @@ from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetada
 
 @singleton
 class MongoRepository:
+    logger = logging.getLogger("uvicorn")
 
     def __init__(self, mongo_config: MongoConfig, mongo_client: AsyncMongoClient):
         self.client = mongo_client
@@ -34,9 +37,11 @@ class MongoRepository:
         return await self.collection.find_one({'image_id': image_id})
 
     async def register_image_metadata(self, image_metadata: ImageMetadata) -> ImageMetadata:
-        await self.collection.update_one(
+        updated_metadata = await self.collection.update_one(
             {'image_id': image_metadata.image_id},
             {'$set': image_metadata.__dict__},
             upsert=True
         )
+        self.logger.info(f"Updated metadata for image {image_metadata.image_id} is {updated_metadata}")
         return image_metadata
+
