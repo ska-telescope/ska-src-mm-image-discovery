@@ -12,8 +12,8 @@ services:
           path: src
     environment:
       - MONGO_URI=mongodb://root:password@mongodb:27017/?authSource=admin
-    extra_hosts:
-      - "image-register-host:image-register-ip"
+#    extra_hosts:
+#      - "image-register-host:image-register-ip"
     ports:
       - "8080:8080"
     networks:
