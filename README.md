@@ -1,47 +1,85 @@
 # SKA SRC Mm-Image-Discovery API
 
-This API has been generated from a templated SRCNet API. Please fill out this section with details about what the API
-does.
+This service is used to register and retrieve metadata for SKA Image containers.
 
-[TOC]
+This service has 2 endpoints `/image/search` and `/image/register` for searching by name or by metadata and registering a new image.
 
-## Authentication
+## API and response
 
-The following sections assume that the API has been integrated with both IAM and the Permissions API. This involves:
+### Search for images based on type
 
-- Creating an IAM client (for Services to obtain access via a `client_credentials` grant),
-- Passing the credentials (id/secret) to either `.env` files (docker-compose) or in the `values.yaml` (helm), and
-- Creating the permissions policy and loading it in to the Permissions API.
+#### Request
 
-Access can then be granted for either a User or Service.
+```http
+GET /v1/image/search?type=headless
+```
 
-### User
+#### Response
+```json
+[
+	{
+		"image_id": "images.canfar.net/canfar/base-3.12:v0.4.1",
+		"author_name": "majorb",
+		"types": [
+			"headless"
+		],
+		"digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
+		"tag": "v0.4.1"
+	},
+	{
+		"image_id": "images.canfar.net/canucs/test:1.2.5",
+		"author_name": "admin",
+		"types": [
+			"headless"
+		],
+		"digest": "sha256:8e3823ee29e30861b4f30261aba9938cd43c82eb327c61a948d74d55334fd485",
+		"tag": "1.2.5"
+	}
+]
+```
 
-To access this API as a user, the user needs to have first authenticated with the SRCNet and to have exchanged the token 
-resulting from this initial authentication with one that allows access to this specific service. See the Authentication 
-Mechanism and Token Exchange Mechanism sections of the Authentication API for more specifics.
+### Search by image name
 
-### Service
+#### Request
 
-For service-to-service interactions, it is possible to obtain a token via a ***client_credentials*** grant to the
-ska-src-mm-image-discovery-api IAM client.
+```http
+GET /v1/image/search?image_id=images.canfar.net/canfar/base-3.12:v0.4.1
+```
 
-## Authorisation
+#### Response
+```json
+{
+   "image_id": "images.canfar.net/canfar/base-3.12:v0.4.1",
+   "author_name": "majorb",
+   "types": [
+      "headless"
+   ],
+   "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
+   "tag": "v0.4.1"
+}
+```
 
-Hereafter, the caller (either a user or another service) is assumed to have a valid token allowing access to this API. 
-Authenticated requests are then made by including this token in the header.
+### Register a new image
 
-The token audience must also match the expected audience, also defined in the mm-image-discovery-api permissions 
-policy (default: “mm-image-discovery-api”).
+#### Request
 
-### Restricting user access to routes using token scopes
+```http
+POST /v1/image/register?image_url=images.canfar.net/canfar/base-3.12:v0.4.1
+```
 
-The presented token must include a specific scope expected by the service to be permitted access to all API routes. This 
-scope is defined in the mm-image-discovery-api permissions policy 
-(default: “mm-image-discovery-api-service”). 
+```json
+{
+    "image_id": "images.canfar.net/canfar/base-3.12:v0.4.1",
+    "author_name": "majorb",
+    "types": [
+        "headless"
+    ],
+    "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
+    "tag": "v0.4.1"
+}
+```
 
-**This scope must also be added to the IAM permissions client otherwise the process of token instrospection will drop 
-this scope.**
+
 
 ## Development
 
@@ -113,10 +151,6 @@ The repository is structured as follows:
 
 The API endpoint logic is within the `src/rest/server.py` with `/ping` and `/health` endpoints provided as a reference.
 
-### Bypassing AuthN/Z
-
-AuthN/Z can be bypassed for development by setting `DISABLE_AUTHENTICATION=yes` in the environment.
-
 ## Deployment
 
 Deployment is managed by docker-compose or helm.
@@ -147,5 +181,3 @@ After editing the `values.yaml` (template in `/etc/helm/`):
 $ create namespace ska_src_mm_image_discovery_api
 $ helm install --namespace ska_src_mm_image_discovery_api ska_src_mm_image_discovery_api .
 ```
-
-## References
