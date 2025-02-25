@@ -1,6 +1,26 @@
 # SKA SRC Mm-Image-Discovery API
 
 This service is used to register and retrieve metadata for SKA Image containers.
+Its primary goal is to assist science users
+in **finding the software efficiently** through a portal/UI that interacts with a **Image Discovery API**.
+
+### **Key Functions of the Service**
+
+1. **Image Discovery**
+   - Users search for Image using an API to find the right tool for their needs.
+   - The system retrieves relevant Image metadata.
+
+2. **Image Registration**
+   - The user can register a specific image in the system and later the image will be available for search.
+
+3. **Execution Broker Role (Future scope yet to be implemented)**
+   - Once the software is identified, the **Ex Broker** determines the required resources to run it.
+   - It extracts metadata about the software to understand **minimum resource requirements** (CPU, memory, storage, etc.).
+   - This ensures the job is executed efficiently in an appropriate environment.
+
+
+This service **assists scientists in discovering and executing OCI image** by integrating metadata-based resource management. 
+It ensures that the right OCI image is found, its dependencies are understood, and the necessary resources are allocated for successful execution.
 
 This service has 2 endpoints `/image/search` and `/image/register` for searching by name or by metadata and registering a new image.
 
