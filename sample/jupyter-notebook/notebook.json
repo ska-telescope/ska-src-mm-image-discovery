@@ -1,0 +1,22 @@
+{
+  "executable": {
+    "name": "notebook",
+    "type": "jupyter-notebook",
+    "location": "https://raw.githubusercontent.com/Zarquan/binder-demo/main/02_dmhh.ipynb"
+  },
+  "metadata": {
+    "description": "A Jupyter notebook for the analysis of CANFAR data.",
+    "version": "0.2",
+    "authorName": "Zarquan"
+  },
+  "resources": {
+    "cores": {
+      "min": 5,
+      "max": 15
+    },
+    "memory": {
+      "min": 3,
+      "max": 9
+    }
+  }
+}

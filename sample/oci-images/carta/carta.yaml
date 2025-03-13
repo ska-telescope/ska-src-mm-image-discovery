@@ -1,0 +1,20 @@
+executable:
+  name: carta
+  type: "docker-container"
+  location: "images.canfar.net/skaha/carta:latest"
+
+metadata:
+  description: "carta is a tool for the analysis of CANFAR data."
+  version: "latest"
+  tag: "latest"
+  authorName: "admin"
+  digest: "sha256:9697ef53656d8b9000e29d100fb971236f76269a8bb67fc20bb67a217f409ca9"
+  specifications: [ "carta" ]
+
+resources:
+  cores:
+    min: 5
+    max: 15
+  memory:
+    min: 3
+    max: 9
