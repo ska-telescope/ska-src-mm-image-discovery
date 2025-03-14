@@ -9,8 +9,10 @@ from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.controller.health_check_controller import HealthCheckController
 from src.ska_src_mm_image_discovery_api.controller.metadata_controller import MetadataController
+from src.ska_src_mm_image_discovery_api.controller.software_discovery_controller import SoftwareDiscoveryController
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 from src.ska_src_mm_image_discovery_api.service.metadata_service import MetadataService
+from src.ska_src_mm_image_discovery_api.service.software_discovery_service import SoftwareDiscoveryService
 
 
 def get_mongo_config() -> MongoConfig:
@@ -40,6 +42,7 @@ def get_mongo_repository(
 def get_skopeo() -> Skopeo:
     return Skopeo()
 
+
 # return a bean of MetadataService
 def get_metadata_service(
         mongo_repository: MongoRepository = Depends(get_mongo_repository),
@@ -48,11 +51,23 @@ def get_metadata_service(
     return MetadataService(mongo_repository, skopeo)
 
 
+# return a bean of SoftwareDiscoveryService
+# need to give the mongo client
+def get_software_metadata_service() -> SoftwareDiscoveryService:
+    return SoftwareDiscoveryService()
+
+
 # return a bean of MetadataController
 def get_metadata_controller(
         metadata_service: MetadataService = Depends(get_metadata_service)
 ) -> MetadataController:
     return MetadataController(metadata_service)
+
+
+# return a bean of SoftwareDiscoveryController
+def get_software_discovery_controller(software_discovery_service: SoftwareDiscoveryService = Depends(
+    get_software_metadata_service)) -> SoftwareDiscoveryController:
+    return SoftwareDiscoveryController(software_discovery_service)
 
 
 def get_health_check_controller(
