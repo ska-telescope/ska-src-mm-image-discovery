@@ -57,8 +57,8 @@ async def register_image(image_url: str, metadata_controller=Depends(get_metadat
 @app.get('/software/metadata', tags=["Software Metadata"])
 @version(1)
 @handle_exceptions
-async def software_metadata_search(software_discovery_controller=Depends(get_software_discovery_controller)):
-    return await software_discovery_controller.discover_software("eee")
+async def discover_software_metadata(software_discovery_controller=Depends(get_software_discovery_controller)):
+    return await software_discovery_controller.discover_software(None)
 
 
 @app.post('/software/register', tags=["Software Metadata"])

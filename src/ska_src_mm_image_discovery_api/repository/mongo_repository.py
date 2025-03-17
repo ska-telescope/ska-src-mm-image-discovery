@@ -12,7 +12,7 @@ from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetada
 class MongoRepository:
     logger = logging.getLogger("uvicorn")
 
-    def __init__(self, mongo_config: MongoConfig, mongo_client: AsyncMongoClient):
+    def __init__(self, mongo_config: MongoConfig, mongo_client: AsyncMongoClient,):
         self.client = mongo_client
         self.db = self.client[mongo_config.DB]
         self.collection = self.db[mongo_config.Collection]

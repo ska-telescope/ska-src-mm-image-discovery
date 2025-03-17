@@ -4,6 +4,7 @@ import os
 from fastapi import Depends
 from pymongo import AsyncMongoClient
 
+from src.ska_src_mm_image_discovery_api.client.config_client import ConfigClient
 from src.ska_src_mm_image_discovery_api.client.mongo_client import MongoClient
 from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
@@ -15,11 +16,20 @@ from src.ska_src_mm_image_discovery_api.service.metadata_service import Metadata
 from src.ska_src_mm_image_discovery_api.service.software_discovery_service import SoftwareDiscoveryService
 
 
-def get_mongo_config() -> MongoConfig:
+# return a bean of ConfigClient
+def get_config_client() -> ConfigClient:
+    return ConfigClient()
+
+
+def get_mongo_config(
+        config_client: ConfigClient = Depends(get_config_client)
+) -> MongoConfig:
     return MongoConfig(
         uri=os.getenv('MONGO_URI', 'mongodb://root:password@localhost:27017/?authSource=admin'),
         db_name=os.getenv('MONGO_DB_NAME', 'metadata_db'),
-        collection_name=os.getenv('MONGO_COLLECTION_NAME', 'images')
+        collection_name=os.getenv('MONGO_COLLECTION_NAME', 'images'),
+        # metadata_db=config_client.get_dict("database.name"),
+        # metadata_collections=config_client.get_dict("database.collections")
     )
 
 
