@@ -7,14 +7,13 @@ from pymongo import MongoClient, ASCENDING
 # Suppress only the single InsecureRequestWarning from urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 harbor_hosts = os.getenv('HARBOR_HOST', 'images.canfar.net').split()
 print(f"Harbor hosts: {harbor_hosts}")
 
 # MongoDB connection
 mongo_db_uri = os.getenv('MONGO_URI', 'mongodb://root:password@localhost:27017/?authSource=admin')
 mongo_db_name = os.getenv('MONGO_DB_NAME', 'software_metadata')
-collection_name = os.getenv('MONGO_COLLECTION_NAME', 'images') ## todo change this to docker-container
+collection_name = os.getenv('MONGO_COLLECTION_NAME', 'docker-container')
 
 mongo_client = MongoClient(mongo_db_uri)
 db = mongo_client[mongo_db_name]
@@ -28,9 +27,7 @@ except Exception as e:
     exit(1)
 
 # Create index if it does not exist
-collection.create_index([('author_name', ASCENDING)], name='author_index')
-collection.create_index([('types', ASCENDING)], name='types_index')
-collection.create_index([('image_id', ASCENDING)], name='image_id_unique_index', unique=True)
+collection.create_index([('executable.location', ASCENDING)], name='image_location_unique_index', unique=True)
 
 for harbor_host in harbor_hosts:
     url = f"https://{harbor_host}/api/v2.0/projects?page_size=100"
@@ -71,16 +68,35 @@ for harbor_host in harbor_hosts:
                     continue
 
                 labels = [label['name'] for label in labels]
+
                 refined_artifact = {
-                    'image_id': image_id,
-                    'tag': tag,
-                    'types': labels,
-                    'digest': artifact['digest'],
-                    'author_name': author_name,
+                    "executable": {
+                        "location": image_id,
+                        "name": name,
+                        "type": "docker-container",
+                    },
+                    "metadata": {
+                        "description": f"This is a {",".join(labels)} {name} image",
+                        "version": tag,
+                        "tag": tag,
+                        "authorName": author_name,
+                        "digest": artifact['digest'],
+                        "specifications": labels
+                    },
+                    "resources": {
+                        "cores": {
+                            "min": 5,
+                            "max": 15
+                        },
+                        "memory": {
+                            "min": 3,
+                            "max": 9
+                        }
+                    }
                 }
 
                 collection.update_one(
-                    {'image_id': image_id},
+                    {'executable.location': image_id},
                     {'$set': refined_artifact},
                     upsert=True
                 )
