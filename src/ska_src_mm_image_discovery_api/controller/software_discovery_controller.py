@@ -1,5 +1,6 @@
 import logging
-from http import HTTPStatus
+
+from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
@@ -13,8 +14,10 @@ class SoftwareDiscoveryController:
     def __init__(self, software_discovery_service: SoftwareDiscoveryService):
         self.software_discovery_service = software_discovery_service
 
-    async def discover_software(self, software_id: str) -> JSONResponse:
-        return await self.software_discovery_service.get_software_metadata()
+    async def discover_software(self, software_name: str, software_type: str) -> JSONResponse:
+        software_metadata_list = await self.software_discovery_service.get_software_metadata(software_name,
+                                                                                             software_type)
+        return JSONResponse(content=jsonable_encoder(software_metadata_list, exclude_none=True))
 
     async def register_software(self) -> JSONResponse:
         return await self.software_discovery_service.register_software_metadata()

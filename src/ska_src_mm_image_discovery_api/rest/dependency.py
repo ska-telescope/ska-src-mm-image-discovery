@@ -45,6 +45,9 @@ def get_mongo_repository(
     return MongoRepository(mongo_config, mongo_client)
 
 
+## Image Metadata Controller
+
+
 # return a bean of Skopeo
 def get_skopeo() -> Skopeo:
     return Skopeo()
@@ -58,17 +61,22 @@ def get_metadata_service(
     return ImageMetadataService(mongo_repository, skopeo)
 
 
-# return a bean of SoftwareDiscoveryService
-# need to give the mongo client
-def get_software_metadata_service() -> SoftwareDiscoveryService:
-    return SoftwareDiscoveryService()
-
-
 # return a bean of MetadataController
 def get_metadata_controller(
         metadata_service: ImageMetadataService = Depends(get_metadata_service)
 ) -> MetadataController:
     return MetadataController(metadata_service)
+
+
+## Software Metadata Controller
+
+# return a bean of SoftwareDiscoveryService
+# need to give the mongo client
+def get_software_metadata_service(
+        mongo_config: MongoConfig = Depends(get_mongo_config),
+        mongo_repository: MongoRepository = Depends(get_mongo_repository),
+) -> SoftwareDiscoveryService:
+    return SoftwareDiscoveryService(mongo_config, mongo_repository)
 
 
 # return a bean of SoftwareDiscoveryController

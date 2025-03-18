@@ -54,11 +54,13 @@ async def register_image(image_url: str, metadata_controller=Depends(get_metadat
     })
 
 
-@app.get('/software/metadata', tags=["Software Metadata"])
+@app.get('/software/metadata', tags=["Software Metadata"],
+         description="This api will return the software metadata list by software name and type")
 @version(1)
 @handle_exceptions
-async def discover_software_metadata(software_discovery_controller=Depends(get_software_discovery_controller)):
-    return await software_discovery_controller.discover_software(None)
+async def discover_software_metadata(software_name: str, software_type: str,
+                                     software_discovery_controller=Depends(get_software_discovery_controller)):
+    return await software_discovery_controller.discover_software(software_name, software_type)
 
 
 @app.post('/software/register', tags=["Software Metadata"])

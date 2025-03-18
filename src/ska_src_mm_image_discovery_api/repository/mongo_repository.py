@@ -14,10 +14,9 @@ class MongoRepository:
 
     def __init__(self, mongo_config: MongoConfig, mongo_client: AsyncMongoClient,):
         self.client = mongo_client
+        self.mongo_config = mongo_config
         self.db = self.client[mongo_config.DB]
         self.images_collection = self.db[mongo_config.images_collection]
-        self.docker_container_collection = self.db[mongo_config.docker_container_collection]
-        self.jupyter_notebook_collection = self.db[mongo_config.jupyter_notebook_collection]
 
     async def ping(self):
         try:
@@ -47,3 +46,8 @@ class MongoRepository:
         self.logger.info(f"Updated metadata for image {image_metadata.image_id} is {updated_metadata}")
         return image_metadata
 
+    async def get_software_metadata(self, software_name: str, software_type: str) -> list:
+        collection_name = self.mongo_config.get_collection_name(software_type)
+        collection = self.db[collection_name]
+        metadata_list = await collection.find({'executable.name': software_name}).to_list(length=None)
+        return metadata_list
