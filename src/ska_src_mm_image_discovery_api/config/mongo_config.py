@@ -1,15 +1,13 @@
-import os
-
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 
 
 @singleton
 class MongoConfig:
 
-    def __init__(self, uri: str, db_name: str, collection_name: str):
+    def __init__(self, uri: str, metadata_db: str, metadata_collections: dict):
         self.uri = uri
-        self.db_name = db_name
-        self.collection_name = collection_name
+        self.metadata_db = metadata_db
+        self.__metadata_collections = metadata_collections
 
     @property
     def URI(self) -> str:
@@ -17,10 +15,8 @@ class MongoConfig:
 
     @property
     def DB(self) -> str:
-        return self.db_name
+        return self.metadata_db
 
     @property
     def Collection(self) -> str:
-        return self.collection_name
-
-
+        return self.__metadata_collections["images"]

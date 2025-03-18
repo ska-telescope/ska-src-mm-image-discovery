@@ -13,8 +13,8 @@ print(f"Harbor hosts: {harbor_hosts}")
 
 # MongoDB connection
 mongo_db_uri = os.getenv('MONGO_URI', 'mongodb://root:password@localhost:27017/?authSource=admin')
-mongo_db_name = os.getenv('MONGO_DB_NAME', 'metadata_db')
-collection_name = os.getenv('MONGO_COLLECTION_NAME', 'images')
+mongo_db_name = os.getenv('MONGO_DB_NAME', 'software_metadata')
+collection_name = os.getenv('MONGO_COLLECTION_NAME', 'images') ## todo change this to docker-container
 
 mongo_client = MongoClient(mongo_db_uri)
 db = mongo_client[mongo_db_name]

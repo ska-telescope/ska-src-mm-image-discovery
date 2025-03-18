@@ -35,7 +35,12 @@ class TestMongoRepository:
 
     @pytest.fixture(autouse=True)
     def mongo_config(self):
-        return MongoConfig(uri="mongodb", db_name="test_db", collection_name="test_collection")
+        return MongoConfig(uri="mongodb",
+                           metadata_db="test_db",
+                           metadata_collections={'images': 'images',
+                                                 'docker-container': 'docker-container',
+                                                 'jupyter-notebook': 'jupyter-notebook'}
+                           )
 
     @pytest.fixture(autouse=True)
     def mongo_repository(self, mongo_config, async_mongo_client):
