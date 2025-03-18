@@ -18,5 +18,16 @@ class MongoConfig:
         return self.metadata_db
 
     @property
-    def Collection(self) -> str:
+    def images_collection(self) -> str:
         return self.__metadata_collections["images"]
+
+    @property
+    def docker_container_collection(self) -> str:
+        return self.__metadata_collections["docker-container"]
+
+    @property
+    def jupyter_notebook_collection(self) -> str:
+        return self.__metadata_collections["jupyter-notebook"]
+
+    def is_valid_collection(self, collection: str) -> bool:
+        return collection in self.__metadata_collections

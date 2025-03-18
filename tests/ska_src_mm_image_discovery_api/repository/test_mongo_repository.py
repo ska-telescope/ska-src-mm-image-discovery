@@ -84,7 +84,7 @@ class TestMongoRepository:
         mongo_collection.find.return_value = find_result
         find_result.to_list = AsyncMock(return_value=[{'image_id': '5', 'type_name': 'test'}])
 
-        result = await mongo_repository.get_all_metadata({})
+        result = await mongo_repository.get_all_image_metadata({})
 
         assert result == [{'image_id': '5', 'type_name': 'test'}]
         mongo_collection.find.assert_called_once_with({})
@@ -95,7 +95,7 @@ class TestMongoRepository:
         mongo_collection.find.return_value = find_result
         find_result.to_list = AsyncMock(return_value=[{'image_id': '5', 'type_name': 'test'}])
 
-        result = await mongo_repository.get_all_metadata({'type_name': 'test'})
+        result = await mongo_repository.get_all_image_metadata({'type_name': 'test'})
 
         assert result == [{'image_id': '5', 'type_name': 'test'}]
         mongo_collection.find.assert_called_once_with({'type_name': 'test'})
@@ -105,7 +105,7 @@ class TestMongoRepository:
         mongo_collection.find_one.return_value = {'image_id': '6', 'type_name': 'test'}
         image_id = '6'
 
-        result = await mongo_repository.get_metadata_by_image_id(image_id)
+        result = await mongo_repository.get_image_metadata_by_image_id(image_id)
 
         assert result == {'image_id': '6', 'type_name': 'test'}
         mongo_collection.find_one.assert_called_once_with({'image_id': image_id})

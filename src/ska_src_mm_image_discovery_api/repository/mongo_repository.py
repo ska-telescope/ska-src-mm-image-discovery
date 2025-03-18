@@ -15,7 +15,9 @@ class MongoRepository:
     def __init__(self, mongo_config: MongoConfig, mongo_client: AsyncMongoClient,):
         self.client = mongo_client
         self.db = self.client[mongo_config.DB]
-        self.collection = self.db[mongo_config.Collection]
+        self.images_collection = self.db[mongo_config.images_collection]
+        self.docker_container_collection = self.db[mongo_config.docker_container_collection]
+        self.jupyter_notebook_collection = self.db[mongo_config.jupyter_notebook_collection]
 
     async def ping(self):
         try:
@@ -29,15 +31,15 @@ class MongoRepository:
         server_info = await self.client.server_info()
         return "UP" if server_info.get("ok") == 1 else "DOWN"
 
-    async def get_all_metadata(self, metadata_filter: dict) -> list:
-        metadata_list = await self.collection.find(metadata_filter).to_list(length=None)
+    async def get_all_image_metadata(self, metadata_filter: dict) -> list:
+        metadata_list = await self.images_collection.find(metadata_filter).to_list(length=None)
         return metadata_list
 
-    async def get_metadata_by_image_id(self, image_id: str) -> dict:
-        return await self.collection.find_one({'image_id': image_id})
+    async def get_image_metadata_by_image_id(self, image_id: str) -> dict:
+        return await self.images_collection.find_one({'image_id': image_id})
 
     async def register_image_metadata(self, image_metadata: ImageMetadata) -> ImageMetadata:
-        updated_metadata = await self.collection.update_one(
+        updated_metadata = await self.images_collection.update_one(
             {'image_id': image_metadata.image_id},
             {'$set': image_metadata.__dict__},
             upsert=True

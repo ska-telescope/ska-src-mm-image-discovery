@@ -7,7 +7,7 @@ import pytest
 from fastapi import HTTPException
 
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
-from src.ska_src_mm_image_discovery_api.service.metadata_service import MetadataService
+from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
 
 
 @pytest.mark.asyncio
@@ -16,7 +16,7 @@ class TestMetadataService:
 
     @pytest.fixture(autouse=True)
     def metadata_service(self):
-        return MetadataService.__cls__(AsyncMock(), AsyncMock())
+        return ImageMetadataService.__cls__(AsyncMock(), AsyncMock())
 
     async def test_get_all_metadata(self, metadata_service):
         metadata_filter = {}
@@ -27,17 +27,17 @@ class TestMetadataService:
                           tag='1')
         ]
 
-        metadata_service.mongo_repository.get_all_metadata.return_value = [
+        metadata_service.mongo_repository.get_all_image_metadata.return_value = [
             {'image_id': '1', 'name': 'name-1', 'author_name': 'author_1', 'types': list('type_1'),
              'digest': 'digest_1', 'tag': '1'},
             {'image_id': '2', 'name': 'name-2', 'author_name': 'author_2', 'types': list('type_2'),
              'digest': 'digest_2', 'tag': '1'}
         ]
 
-        result = await metadata_service.get_all_metadata(metadata_filter)
+        result = await metadata_service.get_all_image_metadata(metadata_filter)
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_all_metadata.assert_called_once_with(metadata_filter)
+        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with(metadata_filter)
 
     async def test_get_all_metadata_by_type(self, metadata_service):
         metadata_filter = {'type_name': 'type_1'}
@@ -46,15 +46,15 @@ class TestMetadataService:
                           tag='1'),
         ]
 
-        metadata_service.mongo_repository.get_all_metadata.return_value = [
+        metadata_service.mongo_repository.get_all_image_metadata.return_value = [
             {'image_id': '1', 'name': 'name-1', 'author_name': 'author_1', 'types': list('type_1'),
              'digest': 'digest_1', 'tag': '1'},
         ]
 
-        result = await metadata_service.get_all_metadata(metadata_filter)
+        result = await metadata_service.get_all_image_metadata(metadata_filter)
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_all_metadata.assert_called_once_with({'types': 'type_1'})
+        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with({'types': 'type_1'})
 
     async def test_get_metadata_by_image_id(self, metadata_service):
         image_id = '1'
@@ -62,29 +62,29 @@ class TestMetadataService:
                                           digest='digest_1',
                                           tag='1')
 
-        metadata_service.mongo_repository.get_metadata_by_image_id.return_value = {'image_id': '1',
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.return_value = {'image_id': '1',
                                                                                    'name': 'name-1',
                                                                                    'author_name': 'author_1',
                                                                                    'types': list('type_1'),
                                                                                    'digest': 'digest_1',
                                                                                    'tag': '1'}
 
-        result = await metadata_service.get_metadata_by_image_id(image_id)
+        result = await metadata_service.get_image_metadata_by_image_id(image_id)
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_metadata_by_image_id.assert_called_once_with(image_id)
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
 
     async def test_get_metadata_by_image_id_not_found(self, metadata_service):
         image_id = 'non_existent_id'
 
-        metadata_service.mongo_repository.get_metadata_by_image_id.return_value = None
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.return_value = None
 
         with pytest.raises(HTTPException) as exc_info:
-            await metadata_service.get_metadata_by_image_id(image_id)
+            await metadata_service.get_image_metadata_by_image_id(image_id)
 
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == f"Image with id {image_id} not found"
-        metadata_service.mongo_repository.get_metadata_by_image_id.assert_called_once_with(image_id)
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
 
     async def test_register_metadata(self, metadata_service):
         image_url = 'image_url'
