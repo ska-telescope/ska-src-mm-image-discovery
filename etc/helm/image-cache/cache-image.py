@@ -65,7 +65,7 @@ for harbor_host in harbor_hosts:
 
                 if not labels:
                     print(f"No labels found for {image_id}")
-                    continue
+                    labels = []
 
                 labels = [label['name'] for label in labels]
 
