@@ -6,6 +6,7 @@ from pymongo.errors import ConnectionFailure
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
+from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata
 
 
 @singleton
@@ -45,6 +46,29 @@ class MongoRepository:
         )
         self.logger.info(f"Updated metadata for image {image_metadata.image_id} is {updated_metadata}")
         return image_metadata
+
+    async def get_all_image_metadata_v2(self, specification=None) -> list:
+        collection_name = self.mongo_config.get_collection_name("docker-container")
+        collection = self.db[collection_name]
+
+        criteria = {"metadata.specifications": specification} if specification is not None else {}
+        metadata_list = await collection.find(criteria).to_list(length=None)
+        return metadata_list
+
+    async def get_all_image_metadata_by_location(self, specification: str) -> dict:
+        collection_name = self.mongo_config.get_collection_name("docker-container")
+        collection = self.db[collection_name]
+        return await collection.findOne({"executable.location": specification})
+
+    async def add_software_metadata(self, software_type: str, software_metadata: SoftwareMetadata) -> SoftwareMetadata:
+        collection_name = self.mongo_config.get_collection_name(software_type)
+        collection = self.db[collection_name]
+        await collection.update_one(
+            {'executable.location': software_metadata.executable.location},
+            {'$set': software_metadata.dict()},
+            upsert=True
+        )
+        return software_metadata
 
     async def get_software_metadata(self, software_name: str, software_type: str) -> list:
         collection_name = self.mongo_config.get_collection_name(software_type)

@@ -33,7 +33,7 @@ def get_mongo_config(
 
 
 # return OCI labels config
-def get_oci_labels_config(config_client: ConfigClient = Depends(get_config_client)) -> OciConfig:
+def get_oci_config(config_client: ConfigClient = Depends(get_config_client)) -> OciConfig:
     return OciConfig(
         oci_labels=config_client.get_dict("oci.labels.mappings"),
         default_oci_resource=config_client.get_dict("oci.default.resource")
@@ -65,11 +65,11 @@ def get_skopeo() -> Skopeo:
 
 # return a bean of MetadataService
 def get_metadata_service(
-        oci_labels_config: OciConfig = Depends(get_oci_labels_config),
+        oci_config: OciConfig = Depends(get_oci_config),
         mongo_repository: MongoRepository = Depends(get_mongo_repository),
         skopeo: Skopeo = Depends(get_skopeo)
 ) -> ImageMetadataService:
-    return ImageMetadataService(oci_labels_config, mongo_repository, skopeo)
+    return ImageMetadataService(oci_config, mongo_repository, skopeo)
 
 
 # return a bean of MetadataController

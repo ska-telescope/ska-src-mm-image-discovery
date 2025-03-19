@@ -40,6 +40,19 @@ class ImageMetadataService:
             raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
         return ImageMetadata(**document)
 
+
+    async def get_all_image_metadata_v2(self, metadata_filter: dict) -> list[ImageMetadata]:
+        documents = await self.mongo_repository.get_all_image_metadata_v2(metadata_filter['type_name'])
+        image_metadata_list = []
+
+        return image_metadata_list
+
+    async def get_image_metadata_by_image_id_v2(self, image_location: str) -> ImageMetadata:
+        pass
+
+
+
+
     async def inspect_image_metadata(self, image_url: str) -> dict:
         return await self.skopeo.inspect(image_url)
 
@@ -79,7 +92,7 @@ class ImageMetadataService:
             resources=Resources(**self.oci_labels_config.DEFAULT_OCI_RESOURCE)
         )
 
-        # todo save software_metadata it to docker-container collection
+        await self.mongo_repository.add_software_metadata("docker-container", software_metadata)
 
         image_metadata = ImageMetadata(
             image_id=image_url,

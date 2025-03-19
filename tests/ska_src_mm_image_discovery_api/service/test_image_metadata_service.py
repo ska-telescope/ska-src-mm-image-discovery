@@ -17,7 +17,7 @@ class TestMetadataService:
 
     @pytest.fixture(autouse=True)
     def metadata_service(self):
-        oci_labels_config = OciConfig({
+        oci_labels_config = OciConfig.__cls__({
             'annotations': 'annotations',
             'metadata': 'org.opencadc.image.metadata',
             'digest': 'Digest'
