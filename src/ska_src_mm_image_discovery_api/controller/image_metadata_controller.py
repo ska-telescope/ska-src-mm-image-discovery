@@ -10,7 +10,7 @@ logger = logging.getLogger("uvicorn")
 
 
 @singleton
-class MetadataController:
+class ImageMetadataController:
     logger = logging.getLogger("uvicorn")
 
     def __init__(self, metadata_service: ImageMetadataService):

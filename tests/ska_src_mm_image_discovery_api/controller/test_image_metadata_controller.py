@@ -4,15 +4,15 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi import HTTPException
 
-from src.ska_src_mm_image_discovery_api.controller.metadata_controller import MetadataController
+from src.ska_src_mm_image_discovery_api.controller.image_metadata_controller import ImageMetadataController
 
 
 @pytest.mark.asyncio
-class TestMetadataController:
+class TestImageMetadataController:
 
     @pytest.fixture(autouse=True)
     def metadata_controller(self):
-        return MetadataController(AsyncMock())
+        return ImageMetadataController(AsyncMock())
 
     async def test_get_image_metadata_list_by_type(self, metadata_controller):
         metadata_controller.metadata_service.get_all_image_metadata.return_value = [

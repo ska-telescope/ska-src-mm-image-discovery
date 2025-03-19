@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Executable(BaseModel):
@@ -13,7 +13,7 @@ class Metadata(BaseModel):
     description: str | None
     version: str
     tag: str | None
-    authorName: str
+    authorName: str = Field(..., alias='authorName')  # TODO - change to author_name
     digest: str | None
     specifications: List[str] | None
 

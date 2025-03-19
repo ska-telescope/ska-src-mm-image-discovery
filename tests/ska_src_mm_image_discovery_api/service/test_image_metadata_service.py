@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi import HTTPException
 
-from src.ska_src_mm_image_discovery_api.config.oci_labels_config import OciLabelsConfig
+from src.ska_src_mm_image_discovery_api.config.oci_config import OciConfig
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
 
@@ -17,10 +17,19 @@ class TestMetadataService:
 
     @pytest.fixture(autouse=True)
     def metadata_service(self):
-        oci_labels_config = OciLabelsConfig({
+        oci_labels_config = OciConfig({
             'annotations': 'annotations',
             'metadata': 'org.opencadc.image.metadata',
             'digest': 'Digest'
+        }, default_oci_resource={
+            "cores": {
+                "min": 5,
+                "max": 15
+            },
+            "memory": {
+                "min": 3,
+                "max": 9
+            }
         })
         return ImageMetadataService.__cls__(oci_labels_config, AsyncMock(), AsyncMock())
 

@@ -5,9 +5,11 @@ import logging
 from fastapi import HTTPException
 
 from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
-from src.ska_src_mm_image_discovery_api.config.oci_labels_config import OciLabelsConfig
+from src.ska_src_mm_image_discovery_api.config.oci_config import OciConfig
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
+from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata, Executable, Metadata, \
+    Resources
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 
 
@@ -15,7 +17,7 @@ from src.ska_src_mm_image_discovery_api.repository.mongo_repository import Mongo
 class ImageMetadataService:
     logger = logging.getLogger("uvicorn")
 
-    def __init__(self, oci_labels_config: OciLabelsConfig, mongo_repository: MongoRepository, skopeo: Skopeo):
+    def __init__(self, oci_labels_config: OciConfig, mongo_repository: MongoRepository, skopeo: Skopeo):
         self.oci_labels_config = oci_labels_config
         self.mongo_repository = mongo_repository
         self.skopeo = skopeo
@@ -52,22 +54,59 @@ class ImageMetadataService:
             name=metadata.get("Name"),
             author_name=metadata.get("Author"),
             types=metadata.get("Types"),
-            digest=raw_image_metadata.get(self.oci_labels_config.DIGEST, "DEFAULT_DIGEST"),
+            digest=raw_image_metadata.get(self.oci_labels_config.DIGEST_KEY, "DEFAULT_DIGEST"),
             tag=metadata.get("Version")
         )
         return await self.mongo_repository.register_image_metadata(image_metadata)
 
+    async def register_metadata_v2(self, image_url: str) -> ImageMetadata:
+        raw_image_metadata = await self.inspect_image_metadata(image_url)
+        self.logger.debug(f"Image metadata is {raw_image_metadata}")
+        metadata = self.__get_metadata(raw_image_metadata)
+        self.logger.debug(f"decoded image metadata is {metadata}")
+        (image_name, tag) = self.__name_tag_from_image_url(image_url)
+        image_name = metadata.get("Name", image_name)
+        self.logger.debug(f"Image name is {image_name}, tag is {tag}")
+
+        software_metadata = SoftwareMetadata(
+            executable=Executable(name=image_name, type="docker-container", location=image_url),
+            metadata=Metadata(description=f"This is a docker container with name {image_name}",
+                              version=metadata.get("Version"),
+                              tag=tag,
+                              authorName=metadata.get("Author"),
+                              digest=raw_image_metadata.get(self.oci_labels_config.DIGEST_KEY),
+                              specifications=metadata.get("Types")),
+            resources=Resources(**self.oci_labels_config.DEFAULT_OCI_RESOURCE)
+        )
+
+        # todo save software_metadata it to docker-container collection
+
+        image_metadata = ImageMetadata(
+            image_id=image_url,
+            name=image_name,
+            author_name=metadata.get("Author"),
+            types=metadata.get("Types"),
+            digest=raw_image_metadata.get(self.oci_labels_config.DIGEST_KEY),
+            tag=metadata.get("Version")
+        )
+        return image_metadata
+
+    @staticmethod
+    def __name_tag_from_image_url(image_url: str) -> (str, str):
+        name_with_tag = image_url.split("/")[-1]
+        return name_with_tag.split(":")[0], name_with_tag.split(":")[1]
+
     def __get_metadata(self, raw_image_metadata: dict) -> dict:
-        if self.oci_labels_config.ANNOTATION not in raw_image_metadata:
+        if self.oci_labels_config.ANNOTATION_KEY not in raw_image_metadata:
             self.logger.error("annotations not found for the image")
             raise HTTPException(status_code=404, detail="annotations not found for the image")
 
-        annotations = raw_image_metadata.get(self.oci_labels_config.ANNOTATION)
-        if self.oci_labels_config.METADATA not in annotations:
+        annotations = raw_image_metadata.get(self.oci_labels_config.ANNOTATION_KEY)
+        if self.oci_labels_config.METADATA_KEY not in annotations:
             self.logger.error("metadata not found for the image")
             raise HTTPException(status_code=404, detail="metadata not found for the image")
 
-        encoded_metadata = annotations.get(self.oci_labels_config.METADATA)
+        encoded_metadata = annotations.get(self.oci_labels_config.METADATA_KEY)
         return self.__decode_metadata(encoded_metadata)
 
 

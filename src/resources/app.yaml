@@ -13,6 +13,15 @@ database:
 
 oci:
   labels:
-    annotations: annotations
-    metadata: org.opencadc.image.metadata
-    digest: Digest
+    mappings:
+      annotations: annotations
+      metadata: org.opencadc.image.metadata
+      digest: Digest
+  default:
+    resource:
+      cores:
+        min: 5
+        max: 15
+      memory:
+        min: 3
+        max: 9

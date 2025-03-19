@@ -7,9 +7,9 @@ from src.ska_src_mm_image_discovery_api.client.config_client import ConfigClient
 from src.ska_src_mm_image_discovery_api.client.mongo_client import MongoClient
 from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
-from src.ska_src_mm_image_discovery_api.config.oci_labels_config import OciLabelsConfig
+from src.ska_src_mm_image_discovery_api.config.oci_config import OciConfig
 from src.ska_src_mm_image_discovery_api.controller.health_check_controller import HealthCheckController
-from src.ska_src_mm_image_discovery_api.controller.metadata_controller import MetadataController
+from src.ska_src_mm_image_discovery_api.controller.image_metadata_controller import ImageMetadataController
 from src.ska_src_mm_image_discovery_api.controller.software_discovery_controller import SoftwareDiscoveryController
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
@@ -33,9 +33,10 @@ def get_mongo_config(
 
 
 # return OCI labels config
-def get_oci_labels_config(config_client: ConfigClient = Depends(get_config_client)) -> OciLabelsConfig:
-    return OciLabelsConfig(
-        oci_labels=config_client.get_dict("oci.labels")
+def get_oci_labels_config(config_client: ConfigClient = Depends(get_config_client)) -> OciConfig:
+    return OciConfig(
+        oci_labels=config_client.get_dict("oci.labels.mappings"),
+        default_oci_resource=config_client.get_dict("oci.default.resource")
     )
 
 
@@ -64,7 +65,7 @@ def get_skopeo() -> Skopeo:
 
 # return a bean of MetadataService
 def get_metadata_service(
-        oci_labels_config: OciLabelsConfig = Depends(get_oci_labels_config),
+        oci_labels_config: OciConfig = Depends(get_oci_labels_config),
         mongo_repository: MongoRepository = Depends(get_mongo_repository),
         skopeo: Skopeo = Depends(get_skopeo)
 ) -> ImageMetadataService:
@@ -74,8 +75,8 @@ def get_metadata_service(
 # return a bean of MetadataController
 def get_metadata_controller(
         metadata_service: ImageMetadataService = Depends(get_metadata_service)
-) -> MetadataController:
-    return MetadataController(metadata_service)
+) -> ImageMetadataController:
+    return ImageMetadataController(metadata_service)
 
 
 ## Software Metadata Controller
