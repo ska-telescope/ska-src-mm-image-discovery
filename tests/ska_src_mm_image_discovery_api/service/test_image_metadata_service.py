@@ -6,6 +6,7 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi import HTTPException
 
+from src.ska_src_mm_image_discovery_api.config.oci_labels_config import OciLabelsConfig
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
 
@@ -16,7 +17,12 @@ class TestMetadataService:
 
     @pytest.fixture(autouse=True)
     def metadata_service(self):
-        return ImageMetadataService.__cls__(AsyncMock(), AsyncMock())
+        oci_labels_config = OciLabelsConfig({
+            'annotations': 'annotations',
+            'metadata': 'org.opencadc.image.metadata',
+            'digest': 'Digest'
+        })
+        return ImageMetadataService.__cls__(oci_labels_config, AsyncMock(), AsyncMock())
 
     async def test_get_all_metadata(self, metadata_service):
         metadata_filter = {}
@@ -126,7 +132,7 @@ class TestMetadataService:
             await metadata_service.register_metadata(image_url)
 
         assert exc_info.value.status_code == 404
-        assert exc_info.value.detail == f"Image metadata not found for image {image_url}"
+        assert exc_info.value.detail =='annotations not found for the image'
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
         metadata_service.mongo_repository.register_image_metadata.assert_not_called()
@@ -142,7 +148,7 @@ class TestMetadataService:
             await metadata_service.register_metadata(image_url)
 
         assert exc_info.value.status_code == 404
-        assert exc_info.value.detail == f"Image metadata not found for image {image_url}"
+        assert exc_info.value.detail =='metadata not found for the image'
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
         metadata_service.mongo_repository.register_image_metadata.assert_not_called()
@@ -159,7 +165,7 @@ class TestMetadataService:
         metadata_service.skopeo.inspect.return_value = {
             'annotations': {
                 'org.opencadc.image.metadata': base64.b64encode(json.dumps(annotations).encode('utf-8')),
-            }
+            },
         }
 
         image_metadata = ImageMetadata(image_id='image_url',

@@ -1,3 +1,7 @@
+application:
+  name: software-metadata
+  port: 8080
+
 database:
   uri: ${MONGO_URI:mongodb://localhost:27017/mydb}
   name: software_metadata
@@ -6,3 +10,9 @@ database:
     images: images
     docker-container: docker-container
     jupyter-notebook: jupyter-notebook
+
+oci:
+  labels:
+    annotations: annotations
+    metadata: org.opencadc.image.metadata
+    digest: Digest

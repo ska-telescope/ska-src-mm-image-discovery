@@ -1,11 +1,11 @@
 import base64
 import json
 import logging
-import os
 
 from fastapi import HTTPException
 
 from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
+from src.ska_src_mm_image_discovery_api.config.oci_labels_config import OciLabelsConfig
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
@@ -15,12 +15,10 @@ from src.ska_src_mm_image_discovery_api.repository.mongo_repository import Mongo
 class ImageMetadataService:
     logger = logging.getLogger("uvicorn")
 
-    def __init__(self, mongo_repository: MongoRepository, skopeo: Skopeo):
-        self.skopeo = skopeo
+    def __init__(self, oci_labels_config: OciLabelsConfig, mongo_repository: MongoRepository, skopeo: Skopeo):
+        self.oci_labels_config = oci_labels_config
         self.mongo_repository = mongo_repository
-        self.annotation_key = os.getenv("ANNOTATION_KEY", "annotations")
-        self.metadata_key = os.getenv("METADATA_KEY", "org.opencadc.image.metadata")
-        self.digest_key = os.getenv("DIGEST_KEY", "Digest")
+        self.skopeo = skopeo
 
 
     async def get_all_image_metadata(self, metadata_filter: dict) -> list[ImageMetadata]:
@@ -40,32 +38,39 @@ class ImageMetadataService:
             raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
         return ImageMetadata(**document)
 
+    async def inspect_image_metadata(self, image_url: str) -> dict:
+        return await self.skopeo.inspect(image_url)
+
     async def register_metadata(self, image_url: str) -> ImageMetadata:
-        result = await self.skopeo.inspect(image_url)
-        self.logger.debug(f"Image metadata found for image {image_url} is {result}")
+        raw_image_metadata = await self.inspect_image_metadata(image_url)
+        self.logger.debug(f"Image metadata found for image {image_url} is {raw_image_metadata}")
+        metadata = self.__get_metadata(raw_image_metadata)
+        self.logger.debug(f"decoded image metadata found for image {image_url} is {metadata}")
 
-        if self.annotation_key not in result or self.metadata_key not in result.get(self.annotation_key):
-            self.logger.error(f"Image metadata not found for image {image_url}")
-            raise HTTPException(status_code=404, detail=f"Image metadata not found for image {image_url}")
-
-        ## TODO - keys can vary, need to handle this
-        annotations = result.get(self.annotation_key)
-        digest = result.get(self.digest_key, "DEFAULT_DIGEST")
-        metadata = self.__decode_metadata(annotations.get(self.metadata_key))
-
-        ## TODO changes keys and introduce version+tag and name+image_url
         image_metadata = ImageMetadata(
             image_id=image_url,
             name=metadata.get("Name"),
             author_name=metadata.get("Author"),
             types=metadata.get("Types"),
-            digest=digest,
+            digest=raw_image_metadata.get(self.oci_labels_config.DIGEST, "DEFAULT_DIGEST"),
             tag=metadata.get("Version")
         )
         return await self.mongo_repository.register_image_metadata(image_metadata)
 
+    def __get_metadata(self, raw_image_metadata: dict) -> dict:
+        if self.oci_labels_config.ANNOTATION not in raw_image_metadata:
+            self.logger.error("annotations not found for the image")
+            raise HTTPException(status_code=404, detail="annotations not found for the image")
 
-    ## TODO - this method can be moved to different class
+        annotations = raw_image_metadata.get(self.oci_labels_config.ANNOTATION)
+        if self.oci_labels_config.METADATA not in annotations:
+            self.logger.error("metadata not found for the image")
+            raise HTTPException(status_code=404, detail="metadata not found for the image")
+
+        encoded_metadata = annotations.get(self.oci_labels_config.METADATA)
+        return self.__decode_metadata(encoded_metadata)
+
+
     @staticmethod
     def __decode_metadata(encoded_data) -> dict:
         decoded_data = base64.b64decode(encoded_data).decode('utf-8')
