@@ -2,6 +2,7 @@ import logging
 
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
+
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
 
@@ -14,6 +15,10 @@ class MetadataController:
 
     def __init__(self, metadata_service: ImageMetadataService):
         self.metadata_service = metadata_service
+
+    async def image_inspect(self, image_url: str) -> JSONResponse:
+        metadata = await self.metadata_service.inspect_image_metadata(image_url)
+        return JSONResponse(content=jsonable_encoder(metadata))
 
     async def get_image_metadata_list(self, query_params: dict) -> JSONResponse:
         if query_params.get('image_id') is not None:
