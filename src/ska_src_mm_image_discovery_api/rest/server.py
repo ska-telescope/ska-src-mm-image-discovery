@@ -6,8 +6,9 @@ from fastapi_versioning import VersionedFastAPI, version
 
 from src.ska_src_mm_image_discovery_api.decorators.exceptions import handle_exceptions
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
-from src.ska_src_mm_image_discovery_api.rest.dependency import get_health_check_controller, get_metadata_controller, \
-    get_software_discovery_controller
+from src.ska_src_mm_image_discovery_api.rest.dependency import get_metadata_controller
+from src.ska_src_mm_image_discovery_api.router.health_router import router as health_router
+from src.ska_src_mm_image_discovery_api.router.software_metadata_router import software_metadata_router
 
 logger = logging.getLogger("uvicorn")
 
@@ -20,13 +21,9 @@ CORSMiddleware_params = {
     "allow_headers": ["*"]
 }
 
+app.include_router(health_router)
+app.include_router(software_metadata_router)
 
-@app.get('/health', tags=["Health Check"])
-@version(1)
-@handle_exceptions
-async def health(health_check_controller=Depends(get_health_check_controller)):
-    """ Service aliveness. """
-    return await health_check_controller.health()
 
 #todo -> divide in 2 apis
 @app.get('/image/search', tags=["Image Metadata"], response_model=list[ImageMetadata])
@@ -60,36 +57,6 @@ async def image_register(image_url: str, metadata_controller=Depends(get_metadat
     return await metadata_controller.register_image({
         'image_url': image_url
     })
-
-
-@app.get('/software/metadata', tags=["Software Metadata"],
-         description="This api will return the software metadata list by software name and type")
-@version(1)
-@handle_exceptions
-async def discover_software_metadata(software_name: str, software_type: str,
-                                     software_discovery_controller=Depends(get_software_discovery_controller)):
-    return await software_discovery_controller.discover_software(software_name, software_type)
-
-
-@app.post('/software/register', tags=["Software Metadata"])
-@version(1)
-@handle_exceptions
-async def register_software_metadata(software_discovery_controller=Depends(get_software_discovery_controller)):
-    return await software_discovery_controller.register_software()
-
-
-@app.put('/software/update', tags=["Software Metadata"])
-@version(1)
-@handle_exceptions
-async def update_software_metadata(software_discovery_controller=Depends(get_software_discovery_controller)):
-    return await software_discovery_controller.update_software()
-
-
-@app.delete('/software/delete', tags=["Software Metadata"])
-@version(1)
-@handle_exceptions
-async def delete_software_metadata(software_discovery_controller=Depends(get_software_discovery_controller)):
-    return await software_discovery_controller.delete_software()
 
 
 app = VersionedFastAPI(app, version_format='{major}', prefix_format='/api/v{major}')
