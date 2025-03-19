@@ -28,7 +28,7 @@ async def health(health_check_controller=Depends(get_health_check_controller)):
     """ Service aliveness. """
     return await health_check_controller.health()
 
-
+#todo -> divide in 2 apis
 @app.get('/image/search', tags=["Image Metadata"], response_model=list[ImageMetadata])
 @version(1)
 @handle_exceptions
@@ -92,5 +92,5 @@ async def delete_software_metadata(software_discovery_controller=Depends(get_sof
     return await software_discovery_controller.delete_software()
 
 
-app = VersionedFastAPI(app, version_format='{major}', prefix_format='/v{major}')
+app = VersionedFastAPI(app, version_format='{major}', prefix_format='/api/v{major}')
 app.add_middleware(CORSMiddleware, **CORSMiddleware_params)

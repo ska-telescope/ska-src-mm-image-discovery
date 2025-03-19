@@ -13,7 +13,7 @@ class Metadata(BaseModel):
     description: str | None
     version: str
     tag: str | None
-    authorName: str = Field(..., alias='authorName')  # TODO - change to author_name
+    authorName: str | None # TODO - change to author_name
     digest: str | None
     specifications: List[str] | None
 

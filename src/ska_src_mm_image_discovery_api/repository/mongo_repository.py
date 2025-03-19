@@ -55,10 +55,10 @@ class MongoRepository:
         metadata_list = await collection.find(criteria).to_list(length=None)
         return metadata_list
 
-    async def get_all_image_metadata_by_location(self, specification: str) -> dict:
+    async def get_image_metadata_by_location(self, location: str) -> dict:
         collection_name = self.mongo_config.get_collection_name("docker-container")
         collection = self.db[collection_name]
-        return await collection.findOne({"executable.location": specification})
+        return await collection.find_one({"executable.location": location})
 
     async def add_software_metadata(self, software_type: str, software_metadata: SoftwareMetadata) -> SoftwareMetadata:
         collection_name = self.mongo_config.get_collection_name(software_type)

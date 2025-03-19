@@ -22,7 +22,6 @@ class ImageMetadataService:
         self.mongo_repository = mongo_repository
         self.skopeo = skopeo
 
-
     async def get_all_image_metadata(self, metadata_filter: dict) -> list[ImageMetadata]:
         metadata_filter = {"types": metadata_filter.get('type_name')} if metadata_filter.get(
             'type_name') is not None else {}
@@ -40,18 +39,39 @@ class ImageMetadataService:
             raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
         return ImageMetadata(**document)
 
-
     async def get_all_image_metadata_v2(self, metadata_filter: dict) -> list[ImageMetadata]:
         documents = await self.mongo_repository.get_all_image_metadata_v2(metadata_filter['type_name'])
         image_metadata_list = []
 
+        for metadata in documents:
+            image_executable = metadata.get('executable')
+            image_metadata = metadata.get('metadata')
+
+            image_metadata_list.append(ImageMetadata(
+                image_id=image_executable.get('location'),
+                name=image_executable.get('name'),
+                author_name=image_metadata.get("authorName"),
+                types=image_metadata.get("specifications"),
+                digest=image_metadata.get("digest"),
+                tag=image_metadata.get("tag")
+            ))
+
         return image_metadata_list
 
     async def get_image_metadata_by_image_id_v2(self, image_location: str) -> ImageMetadata:
-        pass
+        metadata = await self.mongo_repository.get_image_metadata_by_location(image_location)
 
+        image_executable = metadata.get('executable')
+        image_metadata = metadata.get('metadata')
 
-
+        return ImageMetadata(
+            image_id=image_executable.get('location'),
+            name=image_executable.get('name'),
+            author_name=image_metadata.get("authorName"),
+            types=image_metadata.get("specifications"),
+            digest=image_metadata.get("digest"),
+            tag=image_metadata.get("tag")
+        )
 
     async def inspect_image_metadata(self, image_url: str) -> dict:
         return await self.skopeo.inspect(image_url)
@@ -121,7 +141,6 @@ class ImageMetadataService:
 
         encoded_metadata = annotations.get(self.oci_labels_config.METADATA_KEY)
         return self.__decode_metadata(encoded_metadata)
-
 
     @staticmethod
     def __decode_metadata(encoded_data) -> dict:
