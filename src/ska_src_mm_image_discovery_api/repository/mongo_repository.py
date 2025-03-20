@@ -63,8 +63,9 @@ class MongoRepository:
         )
         return software_metadata
 
-    async def get_software_metadata(self, software_name: str, software_type: str) -> list:
+    async def get_software_metadata(self, software_type: str, software_name: str | None) -> list:
         collection_name = self.mongo_config.get_collection_name(software_type)
         collection = self.db[collection_name]
-        metadata_list = await collection.find({'executable.name': software_name}).to_list(length=None)
+        criteria = {'executable.name': software_name} if software_name is not None else {}
+        metadata_list = await collection.find(criteria).to_list(length=None)
         return metadata_list

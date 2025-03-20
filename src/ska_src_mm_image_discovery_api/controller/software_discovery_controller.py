@@ -14,9 +14,9 @@ class SoftwareDiscoveryController:
     def __init__(self, software_discovery_service: SoftwareDiscoveryService):
         self.software_discovery_service = software_discovery_service
 
-    async def discover_software(self, software_name: str, software_type: str) -> JSONResponse:
-        software_metadata_list = await self.software_discovery_service.get_software_metadata(software_name,
-                                                                                             software_type)
+    async def discover_software(self, software_type: str, software_name: str | None) -> JSONResponse:
+        software_metadata_list = await self.software_discovery_service.get_software_metadata(software_type,
+                                                                                             software_name)
         return JSONResponse(content=jsonable_encoder(software_metadata_list, exclude_none=True))
 
     async def register_software(self) -> JSONResponse:
