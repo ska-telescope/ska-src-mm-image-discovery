@@ -31,9 +31,6 @@ class MongoRepository:
         server_info = await self.client.server_info()
         return "UP" if server_info.get("ok") == 1 else "DOWN"
 
-    async def get_all_image_metadata(self, metadata_filter: dict) -> list:
-        metadata_list = await self.images_collection.find(metadata_filter).to_list(length=None)
-        return metadata_list
 
     async def get_image_metadata_by_image_id(self, image_id: str) -> dict:
         return await self.images_collection.find_one({'image_id': image_id})
@@ -47,7 +44,7 @@ class MongoRepository:
         self.logger.info(f"Updated metadata for image {image_metadata.image_id} is {updated_metadata}")
         return image_metadata
 
-    async def get_all_image_metadata_v2(self, specification=None) -> list:
+    async def get_all_image_metadata(self, specification=None) -> list:
         collection_name = self.mongo_config.get_collection_name("docker-container")
         collection = self.db[collection_name]
 
