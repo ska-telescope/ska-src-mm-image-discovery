@@ -30,3 +30,9 @@ patch-branch:
 
 push:
 	@git push origin `git branch | grep "*" | awk -F'[*]' '{ print $$2 }' | tr -d ' '`
+
+test:
+	pytest
+
+coverage:
+	pytest --cov=src --cov-report=html && python3 -m http.server 5959 --directory htmlcov --bind 127.0.0.1
