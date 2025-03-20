@@ -7,8 +7,6 @@ from src.ska_src_mm_image_discovery_api.rest.dependency import get_health_check_
 router = APIRouter(
     tags=["Health Check"]
 )
-
-
 @router.get("/health")
 @version(1)
 @handle_exceptions
