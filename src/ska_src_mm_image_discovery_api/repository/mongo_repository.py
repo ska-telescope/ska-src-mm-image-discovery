@@ -13,7 +13,7 @@ from src.ska_src_mm_image_discovery_api.models.software_metadata import Software
 class MongoRepository:
     logger = logging.getLogger("uvicorn")
 
-    def __init__(self, mongo_config: MongoConfig, mongo_client: AsyncMongoClient,):
+    def __init__(self, mongo_config: MongoConfig, mongo_client: AsyncMongoClient):
         self.client = mongo_client
         self.mongo_config = mongo_config
         self.db = self.client[mongo_config.DB]

@@ -87,7 +87,7 @@ class TestMongoRepository:
         result = await mongo_repository.get_all_image_metadata({})
 
         assert result == [{'image_id': '5', 'type_name': 'test'}]
-        mongo_collection.find.assert_called_once_with({})
+        mongo_collection.find.assert_called_once_with({'metadata.specifications': {}})
         mongo_collection.find().to_list.assert_called_once_with(length=None)
 
     async def test_get_all_metadata_with_type(self, mongo_repository, async_mongo_client, mongo_collection):
@@ -98,7 +98,7 @@ class TestMongoRepository:
         result = await mongo_repository.get_all_image_metadata({'type_name': 'test'})
 
         assert result == [{'image_id': '5', 'type_name': 'test'}]
-        mongo_collection.find.assert_called_once_with({'type_name': 'test'})
+        mongo_collection.find.assert_called_once_with({'metadata.specifications': {'type_name': 'test'}})
         mongo_collection.find().to_list.assert_called_once_with(length=None)
 
     async def test_get_metadata_by_image_id_success(self, mongo_repository, async_mongo_client, mongo_collection):
