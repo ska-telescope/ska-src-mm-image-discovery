@@ -9,6 +9,8 @@ from pymongo.errors import ConnectionFailure
 
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
+from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata, ResourceLimit, Resources, \
+    Metadata, Executable
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 
 
@@ -119,3 +121,56 @@ class TestMongoRepository:
         mongo_collection.update_one.assert_called_once_with({'image_id': '1'}, {'$set': image_metadata.__dict__}, upsert=True)
         assert return_value == {'image_id': '1', 'name': 'name', 'author_name': 'author_1', 'types': ['type_1'],
                                 'digest': 'digest_1', 'tag': '1'}
+
+    async def test_add_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection):
+        software_metadata = SoftwareMetadata(
+            executable=Executable(name='name', type='type', location='location'),
+            metadata=Metadata(description='description', version='version', tag='tag',
+                              authorName='authorName', digest='digest', specifications=["carta"]),
+            resources=Resources(cores=ResourceLimit(min=5, max=15),
+                                memory=ResourceLimit(min=3, max=9))
+        )
+
+        saved_metadata = await mongo_repository.add_software_metadata('docker-container', software_metadata)
+
+        mongo_collection.update_one.assert_called_once_with({'executable.location': 'location'},
+                                                            {'$set': software_metadata}, upsert=True)
+        assert saved_metadata == software_metadata
+
+    async def test_get_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection):
+        software_metadata = SoftwareMetadata(
+            executable=Executable(name='name', type='type', location='location'),
+            metadata=Metadata(description='description', version='version', tag='tag',
+                              authorName='authorName', digest='digest', specifications=["carta"]),
+            resources=Resources(cores=ResourceLimit(min=5, max=15),
+                                memory=ResourceLimit(min=3, max=9))
+        )
+
+        find_result = Mock()
+        mongo_collection.find.return_value = find_result
+        find_result.to_list = AsyncMock(return_value=[software_metadata])
+
+        metadata_list = await mongo_repository.get_software_metadata('docker-container', 'name')
+
+        assert metadata_list == [software_metadata]
+        mongo_collection.find.assert_called_once_with({'executable.name': 'name'})
+        mongo_collection.find().to_list.assert_called_once_with(length=None)
+
+    async def test_get_software_metadata_without_name(self, mongo_repository, async_mongo_client, mongo_collection):
+        software_metadata = SoftwareMetadata(
+            executable=Executable(name='name', type='type', location='location'),
+            metadata=Metadata(description='description', version='version', tag='tag',
+                              authorName='authorName', digest='digest', specifications=["carta"]),
+            resources=Resources(cores=ResourceLimit(min=5, max=15),
+                                memory=ResourceLimit(min=3, max=9))
+        )
+
+        find_result = Mock()
+        mongo_collection.find.return_value = find_result
+        find_result.to_list = AsyncMock(return_value=[software_metadata])
+
+        metadata_list = await mongo_repository.get_software_metadata('docker-container')
+
+        assert metadata_list == [software_metadata]
+        mongo_collection.find.assert_called_once_with({})
+        mongo_collection.find().to_list.assert_called_once_with(length=None)
