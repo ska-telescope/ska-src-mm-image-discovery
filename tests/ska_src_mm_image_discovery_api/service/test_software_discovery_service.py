@@ -4,7 +4,8 @@ from unittest.mock import Mock, AsyncMock
 import pytest
 from fastapi import HTTPException
 
-from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata, Metadata, Executable, ResourceLimit, Resources
+from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata, Metadata, Executable, \
+    ResourceLimit, Resources
 from src.ska_src_mm_image_discovery_api.service.software_discovery_service import SoftwareDiscoveryService
 
 
@@ -50,8 +51,7 @@ class TestSoftwareDiscoveryService:
             }
         ]
 
-        software_metadata_list = await software_discovery_service.get_software_metadata("base-3.11",
-                                                                                        "docker-container")
+        software_metadata_list = await software_discovery_service.get_software_metadata("docker-container", "base-3.11")
         assert software_metadata_list == [
             SoftwareMetadata(
                 executable=Executable(name='base-3.11', type='docker-container',
@@ -63,14 +63,14 @@ class TestSoftwareDiscoveryService:
                 resources=Resources(cores=ResourceLimit(min=5, max=15), memory=ResourceLimit(min=3, max=9)), )
         ]
 
-        software_discovery_service.mongo_repository.get_software_metadata.assert_called_once_with("base-3.11",
-                                                                                                  "docker-container")
+        software_discovery_service.mongo_repository.get_software_metadata.assert_called_once_with("docker-container","base-3.11")
+
 
     async def test_get_software_metadata_when_software_type_is_invalid(self, software_discovery_service):
         software_discovery_service.mongo_config.is_valid_software_type.return_value = False
 
         with pytest.raises(HTTPException) as exc_info:
-            await software_discovery_service.get_software_metadata("base-3.11", "docker-container")
+            await software_discovery_service.get_software_metadata("docker-container", "base-3.11", )
 
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == "Software type docker-container not found"
