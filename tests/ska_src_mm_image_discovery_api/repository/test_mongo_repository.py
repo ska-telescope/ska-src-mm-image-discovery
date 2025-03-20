@@ -101,14 +101,14 @@ class TestMongoRepository:
         mongo_collection.find.assert_called_once_with({'metadata.specifications': {'type_name': 'test'}})
         mongo_collection.find().to_list.assert_called_once_with(length=None)
 
-    async def test_get_metadata_by_image_id_success(self, mongo_repository, async_mongo_client, mongo_collection):
+    async def test_get_metadata_by_location_success(self, mongo_repository, async_mongo_client, mongo_collection):
         mongo_collection.find_one.return_value = {'image_id': '6', 'type_name': 'test'}
         image_id = '6'
 
-        result = await mongo_repository.get_image_metadata_by_image_id(image_id)
+        result = await mongo_repository.get_image_metadata_by_location(image_id)
 
         assert result == {'image_id': '6', 'type_name': 'test'}
-        mongo_collection.find_one.assert_called_once_with({'image_id': image_id})
+        mongo_collection.find_one.assert_called_once_with({'executable.location': '6'})
 
     async def test_register_image_metadata_success(self , mongo_repository , async_mongo_client , mongo_collection):
         image_metadata = ImageMetadata(image_id='1', name='name', author_name='author_1', types=['type_1'],
