@@ -60,6 +60,7 @@ class MongoRepository:
             {'executable.location': software_metadata.executable.location},
             {'$set': software_metadata.dict()},
             upsert=True
+
         )
         return software_metadata
 
