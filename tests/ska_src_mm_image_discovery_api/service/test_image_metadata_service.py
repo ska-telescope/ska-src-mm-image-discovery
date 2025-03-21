@@ -159,7 +159,7 @@ class TestMetadataService:
             }
         }
 
-        result = await metadata_service.get_image_metadata_by_image_id(image_id)
+        result = await metadata_service.get_image_metadata_by_image_location(image_id)
 
         assert result == expected_metadata
         metadata_service.mongo_repository.get_image_metadata_by_location.assert_called_once_with(image_id)
@@ -170,7 +170,7 @@ class TestMetadataService:
         metadata_service.mongo_repository.get_image_metadata_by_location.return_value = None
 
         with pytest.raises(HTTPException) as exc_info:
-            await metadata_service.get_image_metadata_by_image_id(image_id)
+            await metadata_service.get_image_metadata_by_image_location(image_id)
 
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == f"Image with id {image_id} not found"
