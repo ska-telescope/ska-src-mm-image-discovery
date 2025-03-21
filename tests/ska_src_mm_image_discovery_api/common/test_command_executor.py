@@ -30,7 +30,7 @@ class TestCommandExecutor:
         # Assert
         assert result == expected_output
         mock_run.assert_called_once_with(command, shell=True, check=True, stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE, text=True)
+                                         stderr=subprocess.PIPE, text=True , timeout=5)
 
     @patch('subprocess.run')
     async def test_execute_failure(self, mock_run):
