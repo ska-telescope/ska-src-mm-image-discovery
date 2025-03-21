@@ -2,6 +2,7 @@ import logging
 from unittest.mock import AsyncMock, Mock
 
 import pytest
+from fastapi import HTTPException
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
@@ -60,10 +61,10 @@ class TestMongoRepository:
         async_mongo_client.admin = AsyncMock()
         async_mongo_client.admin.command = AsyncMock(side_effect=ConnectionFailure("Test error"))
 
-        with pytest.raises(Exception) as exc_info:
+        with pytest.raises(HTTPException) as exc_info:
             await mongo_repository.ping()
 
-        assert "Could not connect to MongoDB" in str(exc_info.value)
+        assert exc_info.value.detail == "Could not connect to MongoDB: Test error"
 
     async def test_connection_status_up(self, mongo_repository, async_mongo_client):
         async_mongo_client.server_info = AsyncMock(return_value={'ok': 1})

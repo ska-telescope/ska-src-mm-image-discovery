@@ -2,6 +2,7 @@
 
 from fastapi import Depends
 from pymongo import AsyncMongoClient
+from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
 
 from src.ska_src_mm_image_discovery_api.client.config_client import ConfigClient
 from src.ska_src_mm_image_discovery_api.client.mongo_client import MongoClient
@@ -14,6 +15,7 @@ from src.ska_src_mm_image_discovery_api.controller.software_discovery_controller
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
 from src.ska_src_mm_image_discovery_api.service.software_discovery_service import SoftwareDiscoveryService
+from src.ska_src_mm_image_discovery_api.decorators.db_exceptions import handle_db_exceptions
 
 
 # return a bean of ConfigClient
@@ -48,14 +50,15 @@ def get_mongo_client(
 
 
 # return a bean of MongoRepository
-def get_mongo_repository(
+@handle_db_exceptions
+async def get_mongo_repository(
         mongo_config: MongoConfig = Depends(get_mongo_config),
         mongo_client: AsyncMongoClient = Depends(get_mongo_client)
 ) -> MongoRepository:
-    return MongoRepository(mongo_config, mongo_client)
-
-
-## Image Metadata Controller
+    # return MongoRepository(mongo_config, mongo_client)
+    repository = MongoRepository(mongo_config, mongo_client)
+    await repository.ping()
+    return repository
 
 
 # return a bean of Skopeo
