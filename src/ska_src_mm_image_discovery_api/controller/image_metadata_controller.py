@@ -22,7 +22,7 @@ class ImageMetadataController:
 
     async def get_image_metadata_list(self, query_params: dict) -> JSONResponse:
         if query_params.get('image_id') is not None:
-            metadata = await self.metadata_service.get_image_metadata_by_image_id(query_params.get('image_id'))
+            metadata = await self.metadata_service.get_image_metadata_by_image_location(query_params.get('image_id'))
             return JSONResponse(content=jsonable_encoder(metadata))
         metadata_list = await self.metadata_service.get_all_image_metadata(query_params)
         return JSONResponse(content=jsonable_encoder(metadata_list))

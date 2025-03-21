@@ -22,8 +22,7 @@ class ImageMetadataService:
         self.mongo_repository = mongo_repository
         self.skopeo = skopeo
 
-
-#todo: should accept empty metadata filter
+    # todo: should accept empty metadata filter
     async def get_all_image_metadata(self, metadata_filter: dict) -> list[ImageMetadata]:
         documents = await self.mongo_repository.get_all_image_metadata(metadata_filter['type_name'])
         image_metadata_list = []
@@ -43,12 +42,12 @@ class ImageMetadataService:
 
         return image_metadata_list
 
-    async def get_image_metadata_by_image_id(self, image_location: str) -> ImageMetadata:
+    async def get_image_metadata_by_image_location(self, image_location: str) -> ImageMetadata:
         metadata = await self.mongo_repository.get_image_metadata_by_location(image_location)
 
-        if metadata is None :
+        if metadata is None:
             self.logger.error(f"Image with id {image_location} not found")
-            raise HTTPException(status_code=404 , detail=f"Image with id {image_location} not found")
+            raise HTTPException(status_code=404, detail=f"Image with id {image_location} not found")
 
         image_executable = metadata.get('executable')
         image_metadata = metadata.get('metadata')
@@ -64,8 +63,6 @@ class ImageMetadataService:
 
     async def inspect_image_metadata(self, image_url: str) -> dict:
         return await self.skopeo.inspect(image_url)
-
-
 
     async def register_metadata(self, image_url: str) -> ImageMetadata:
         raw_image_metadata = await self.inspect_image_metadata(image_url)

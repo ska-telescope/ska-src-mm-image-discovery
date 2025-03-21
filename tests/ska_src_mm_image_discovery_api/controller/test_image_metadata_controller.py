@@ -44,7 +44,7 @@ class TestImageMetadataController:
         metadata_controller.metadata_service.get_all_image_metadata.assert_called_once_with(query_params)
 
     async def test_get_image_metadata_when_image_id_is_present(self, metadata_controller):
-        metadata_controller.metadata_service.get_image_metadata_by_image_id = AsyncMock(return_value={
+        metadata_controller.metadata_service.get_image_metadata_by_image_location = AsyncMock(return_value={
             "image_id": "images.canfar.net/canfar/3.12:v0.1.1",
             "author_name": "mockauthor"
         })
@@ -58,7 +58,7 @@ class TestImageMetadataController:
             "author_name": "mockauthor"
         }
 
-        metadata_controller.metadata_service.get_image_metadata_by_image_id.assert_called_once_with("image_id")
+        metadata_controller.metadata_service.get_image_metadata_by_image_location.assert_called_once_with("image_id")
 
     async def test_register_image(self, metadata_controller):
         metadata_controller.metadata_service.register_metadata = AsyncMock(return_value={
