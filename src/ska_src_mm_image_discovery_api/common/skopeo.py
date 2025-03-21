@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+from asyncio import timeout
 
 from fastapi import HTTPException
 
@@ -27,6 +28,10 @@ class Skopeo:
             cmd = CommandExecutor(f"skopeo inspect docker://{image_url} {options}")
             result = await cmd.execute()
             return json.loads(result)
+        except TimeoutError as timeout:
+            self.logger.error(f"Timeout while fetching metadata for image {image_url}", exc_info=True)
+            raise HTTPException(status_code=504, detail=f"Timeout while fetching metadata for image {image_url}")
         except Exception as err:
             self.logger.error(f"Error while fetching metadata for image {image_url}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Error while fetching metadata for image {image_url}")
+
