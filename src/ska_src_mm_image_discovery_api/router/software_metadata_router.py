@@ -12,7 +12,7 @@ software_metadata_router = APIRouter(
 )
 
 
-@software_metadata_router.get('/query', response_model=list,
+@software_metadata_router.get('/search', response_model=list,
          description="This api will return the software metadata list by software name and type")
 @version(1)
 @handle_exceptions

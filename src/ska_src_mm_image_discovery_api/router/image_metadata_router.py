@@ -13,7 +13,7 @@ image_metadata_router = APIRouter(
 
 
 #todo Route can be changed. Should image_id be image_location?
-@image_metadata_router.get('/fetch-one', response_model=ImageMetadata)
+@image_metadata_router.get('/fetch', response_model=ImageMetadata)
 @version(1)
 @handle_exceptions
 async def image_search_with_id(image_id: str, metadata_controller=Depends(get_metadata_controller)):
@@ -23,7 +23,7 @@ async def image_search_with_id(image_id: str, metadata_controller=Depends(get_me
     })
 
 
-@image_metadata_router.get('/query' , response_model=list[ImageMetadata])
+@image_metadata_router.get('/search' , response_model=list[ImageMetadata])
 @version(1)
 @handle_exceptions
 async def image_search(
