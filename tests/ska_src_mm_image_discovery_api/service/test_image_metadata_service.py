@@ -256,3 +256,26 @@ class TestMetadataService:
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
         metadata_service.mongo_repository.register_image_metadata.assert_not_called()
+
+    async def test_inspect_image_metadata(self, metadata_service):
+        image_url = 'image_url'
+        metadata_service.skopeo.inspect.return_value = {
+            'annotations': {
+                'org.opencadc.image.metadata': b'eyJOYW1lIjogIm5hbWUtMSIsICJB'
+                                               b'dXRob3IiOiAiYXV0aG9yX25hbWUi'
+                                               b'LCAiVHlwZXMiOiBbInR5cGVfMSIs'
+                                               b'ICJ0eXBlXzIiXSwgIlZlcnNpb24i'
+                                               b'OiAidjAuNC4yIn0=',
+            },
+            'Digest': 'digest'
+        }
+
+        result = await metadata_service.inspect_image_metadata(image_url)
+
+        assert result == {'Digest': 'digest',
+                          'annotations': {'org.opencadc.image.metadata': b'eyJOYW1lIjogIm5hbWUtMSIsICJB'
+                                                                         b'dXRob3IiOiAiYXV0aG9yX25hbWUi'
+                                                                         b'LCAiVHlwZXMiOiBbInR5cGVfMSIs'
+                                                                         b'ICJ0eXBlXzIiXSwgIlZlcnNpb24i'
+                                                                         b'OiAidjAuNC4yIn0='}}
+        metadata_service.skopeo.inspect.assert_called_once_with(image_url)

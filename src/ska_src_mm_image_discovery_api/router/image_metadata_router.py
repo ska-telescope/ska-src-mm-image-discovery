@@ -11,7 +11,6 @@ image_metadata_router = APIRouter(
 )
 
 
-#todo Route can be changed. Should image_id be image_location?
 @image_metadata_router.get('/fetch', response_model=ImageMetadata)
 @version(1)
 @handle_exceptions
