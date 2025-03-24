@@ -77,8 +77,7 @@ class TestImageMetadataController:
             "author_name": "mockauthor"
         }
 
-        query_params = {'image_id': 'images.canfar.net/canfar/3.12:v0.1.1'}
-        response = await metadata_controller.get_image_metadata_by_image_location(query_params)
+        response = await metadata_controller.get_image_metadata_by_image_location('images.canfar.net/canfar/3.12:v0.1.1')
         json_response = json.loads(response.body.decode("utf-8"))
 
         assert json_response == {

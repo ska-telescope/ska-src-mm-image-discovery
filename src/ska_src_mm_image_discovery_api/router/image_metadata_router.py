@@ -1,10 +1,9 @@
-import logging
-
-from fastapi import APIRouter , Depends
+from fastapi import APIRouter, Depends
 from fastapi_versioning import version
-from src.ska_src_mm_image_discovery_api.rest.dependency import get_metadata_controller
-from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
+
 from src.ska_src_mm_image_discovery_api.decorators.exceptions import handle_exceptions
+from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
+from src.ska_src_mm_image_discovery_api.rest.dependency import get_metadata_controller
 
 image_metadata_router = APIRouter(
     tags =["Image Metadata"],
@@ -18,9 +17,7 @@ image_metadata_router = APIRouter(
 @handle_exceptions
 async def image_search_with_id(image_id: str, metadata_controller=Depends(get_metadata_controller)):
     """ Get image metadata by image location"""
-    return await metadata_controller.get_image_metadata_by_image_location({
-        'image_id': image_id
-    })
+    return await metadata_controller.get_image_metadata_by_image_location(image_id)
 
 
 @image_metadata_router.get('/search' , response_model=list[ImageMetadata])
@@ -31,12 +28,10 @@ async def image_search(
         metadata_controller=Depends(get_metadata_controller)
 ):
     """ Get an image metadata list """
-    return await metadata_controller.get_image_metadata_list({
-        'type_name': type_name,
-    })
+    return await metadata_controller.get_image_metadata_list(type_name)
 
 
-@image_metadata_router.get('/inspect',  response_model=ImageMetadata)
+@image_metadata_router.get('/inspect',  response_model=dict)
 @version(1)
 @handle_exceptions
 async def image_inspect(image_url: str, metadata_controller=Depends(get_metadata_controller)):

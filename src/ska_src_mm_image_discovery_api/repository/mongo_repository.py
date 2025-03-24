@@ -5,10 +5,11 @@ from pymongo import AsyncMongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
+from src.ska_src_mm_image_discovery_api.decorators.db_exceptions import handle_db_exceptions
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata
-from src.ska_src_mm_image_discovery_api.decorators.db_exceptions import handle_db_exceptions
+
 
 @singleton
 class MongoRepository:
@@ -44,7 +45,7 @@ class MongoRepository:
         return image_metadata
 
     @handle_db_exceptions
-    async def get_all_image_metadata(self, specification=None) -> list:
+    async def get_all_image_metadata(self, specification: str | None) -> list:
         try:
             collection_name = self.mongo_config.get_collection_name("docker-container")
             collection = self.db[collection_name]

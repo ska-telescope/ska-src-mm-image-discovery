@@ -36,7 +36,6 @@ class TestMetadataService:
         return ImageMetadataService.__cls__(oci_labels_config, AsyncMock(), AsyncMock())
 
     async def test_get_all_metadata(self, metadata_service):
-        metadata_filter = {'type_name': 'type_1'}
         expected_metadata = [
             ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.2', name='base-3.11', author_name='majorb',
                           types=[], digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076',
@@ -74,13 +73,12 @@ class TestMetadataService:
             }
         ]
 
-        result = await metadata_service.get_all_image_metadata(metadata_filter)
+        result = await metadata_service.get_all_image_metadata("type_1")
 
         assert result == expected_metadata
         metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with('type_1')
 
     async def test_get_all_metadata_by_type(self, metadata_service):
-        metadata_filter = {'type_name': 'type_1'}
         expected_metadata = [
             ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.2', name='base-3.11', author_name='majorb',
                           types=[], digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076',
@@ -118,7 +116,7 @@ class TestMetadataService:
             }
         ]
 
-        result = await metadata_service.get_all_image_metadata(metadata_filter)
+        result = await metadata_service.get_all_image_metadata('type_1')
 
         assert result == expected_metadata
         metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with('type_1')

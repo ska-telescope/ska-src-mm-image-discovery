@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi_versioning import version
 
 from src.ska_src_mm_image_discovery_api.decorators.exceptions import handle_exceptions
+from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata
 from src.ska_src_mm_image_discovery_api.rest.dependency import get_software_discovery_controller
 
 software_metadata_router = APIRouter(
@@ -12,7 +13,7 @@ software_metadata_router = APIRouter(
 )
 
 
-@software_metadata_router.get('/search', response_model=list,
+@software_metadata_router.get('/search', response_model=list[SoftwareMetadata],
          description="This api will return the software metadata list by software name and type")
 @version(1)
 @handle_exceptions

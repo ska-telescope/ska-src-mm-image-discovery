@@ -23,8 +23,8 @@ class ImageMetadataService:
         self.skopeo = skopeo
 
     # todo: should accept empty metadata filter
-    async def get_all_image_metadata(self, metadata_filter: dict) -> list[ImageMetadata]:
-        documents = await self.mongo_repository.get_all_image_metadata(metadata_filter['type_name'])
+    async def get_all_image_metadata(self, type_name: str | None) -> list[ImageMetadata]:
+        documents = await self.mongo_repository.get_all_image_metadata(type_name)
         image_metadata_list = []
 
         for metadata in documents:
