@@ -6,8 +6,6 @@ from starlette.responses import JSONResponse
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
 
-logger = logging.getLogger("uvicorn")
-
 
 @singleton
 class ImageMetadataController:
