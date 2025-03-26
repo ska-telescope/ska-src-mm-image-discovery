@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export SERVICE_VERSION=`cat VERSION`
-export README_MD=`cat README.md`
+#export SERVICE_VERSION=`cat VERSION`
+#export README_MD=`cat README.md`
 
 #cd src/ska_src_mm_image_discovery_api/rest
 

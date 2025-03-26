@@ -36,3 +36,6 @@ test:
 
 coverage:
 	pytest --cov=src --cov-report=html && python3 -m http.server 5959 --directory htmlcov --bind 127.0.0.1
+
+dev:
+	docker-compose up --build
