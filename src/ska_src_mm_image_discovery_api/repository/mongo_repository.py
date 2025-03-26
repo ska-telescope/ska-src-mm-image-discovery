@@ -35,16 +35,6 @@ class MongoRepository:
         return "UP" if server_info.get("ok") == 1 else "DOWN"
 
     @handle_db_exceptions
-    async def register_image_metadata(self, image_metadata: ImageMetadata) -> ImageMetadata:
-        updated_metadata = await self.images_collection.update_one(
-            {'image_id': image_metadata.image_id},
-            {'$set': image_metadata.__dict__},
-            upsert=True
-        )
-        self.logger.info(f"Updated metadata for image {image_metadata.image_id} is {updated_metadata}")
-        return image_metadata
-
-    @handle_db_exceptions
     async def get_all_image_metadata(self, specification: str | None) -> list:
         try:
             collection_name = self.mongo_config.get_collection_name("docker-container")
