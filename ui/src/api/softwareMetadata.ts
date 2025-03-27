@@ -3,9 +3,13 @@ import {SoftwareDetails, SoftwareMetadata} from "../types/metadataTypes.ts";
 
 
 export const getSoftwareMetadata = async (softwareMetadata: SoftwareDetails) => {
-    const response = await axios.get<SoftwareMetadata>(`${import.meta.env.VITE_BASE_URL}/v1/software/search/`, {
-        params: {"software_type": softwareMetadata.softwareType, software_name: softwareMetadata.softwareName},
-    })
+
+    const params: any = {"software_type": softwareMetadata.softwareType};
+    if (softwareMetadata.softwareName) {
+        params.software_name = softwareMetadata.softwareName;
+    }
+    const response = await axios.get<SoftwareMetadata>(`${import.meta.env.VITE_BASE_URL}/v1/software/search`, {params});
+
     console.log(response.data)
     return response.data
 }

@@ -20,6 +20,8 @@ class SoftwareDiscoveryService:
     async def get_software_metadata(self, software_type: str, software_name: str | None) -> list[SoftwareMetadata]:
         if not self.mongo_config.is_valid_software_type(software_type):
             raise HTTPException(status_code=404, detail=f"Software type {software_type} not found")
+        software_name = software_name.strip() if software_name else None
+        self.logger.info(f"Retrieving {software_name} software")
         software_metadata_documents = await self.mongo_repository.get_software_metadata(software_type, software_name)
         software_metadata_list = [SoftwareMetadata(**document) for document in software_metadata_documents]
         return software_metadata_list
