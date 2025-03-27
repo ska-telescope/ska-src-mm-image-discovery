@@ -7,6 +7,9 @@ from src.ska_src_mm_image_discovery_api.decorators.exceptions import handle_exce
 from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata
 from src.ska_src_mm_image_discovery_api.rest.dependency import get_software_discovery_controller
 
+from fastapi.encoders import jsonable_encoder
+from starlette.responses import JSONResponse
+
 software_metadata_router = APIRouter(
     tags=["Software Metadata"],
     prefix="/software",

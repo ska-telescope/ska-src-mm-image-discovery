@@ -4,6 +4,8 @@ WORKDIR /ui
 COPY ui/package*.json ./
 RUN npm install
 COPY ui/ ./
+
+ENV VITE_BASE_URL=http://localhost:8080/api
 RUN npm run build
 
 

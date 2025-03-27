@@ -1,12 +1,14 @@
-import './App.css'
-import React from "react";
+import Box from '@mui/material/Box';
+import TitleBar from "./components/TitleBar.tsx";
+import SearchBar from "./components/SearchBar.tsx";
 
-function App() : React.ReactElement {
-  return (
-    <>
-      <h1>SKA SRC MM Image Discovery</h1>
-    </>
-  )
+export default function App() {
+    return (
+        <Box sx={{ width: "100vw", height: "100vh", flexGrow: 1 }}>
+            <TitleBar/>
+            <Box sx={{ flexGrow: 1, paddingTop: "100px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <SearchBar/>
+            </Box>
+        </Box>
+    );
 }
-
-export default App

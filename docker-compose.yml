@@ -10,6 +10,8 @@ services:
       watch:
         - action: rebuild
           path: src
+        - action: rebuild
+          path: ui
     environment:
       - MONGO_URI=mongodb://root:password@mongodb:27017/?authSource=admin
 #    extra_hosts:
