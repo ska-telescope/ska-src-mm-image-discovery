@@ -1,9 +1,12 @@
 import axios from 'axios'
+import {SoftwareDetails, SoftwareMetadata} from "../types/metadataTypes.ts";
 
-export const getSoftwareMetadata = async (softwareType: string, softwareId: string) => {
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/v1/software/search/${softwareId}`, {
-        params: {"software_type": softwareType, software_name: softwareId}
+
+export const getSoftwareMetadata = async (softwareMetadata: SoftwareDetails) => {
+    const response = await axios.get<SoftwareMetadata>(`${import.meta.env.VITE_BASE_URL}/v1/software/search/`, {
+        params: {"software_type": softwareMetadata.softwareType, software_name: softwareMetadata.softwareName},
     })
+    console.log(response.data)
     return response.data
 }
 
