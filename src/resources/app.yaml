@@ -7,7 +7,7 @@ database:
   name: software_metadata
   collections:
     ## software_type: collection_name
-    images: images
+    images: images #todo : do we even need this  ???
     docker-container: docker-container
     jupyter-notebook: jupyter-notebook
 

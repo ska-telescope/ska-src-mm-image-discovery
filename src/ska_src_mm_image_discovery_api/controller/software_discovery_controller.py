@@ -27,3 +27,6 @@ class SoftwareDiscoveryController:
 
     async def delete_software(self) -> JSONResponse:
         raise await self.software_discovery_service.delete_software_metadata()
+
+    async def software_types(self) -> JSONResponse:
+        return await self.software_discovery_service.get_software_types()

@@ -29,6 +29,10 @@ class MongoConfig:
     def jupyter_notebook_collection(self) -> str:
         return self.__metadata_collections["jupyter-notebook"]
 
+    @property
+    def get_all_software_types(self) -> list:
+        return list(self.__metadata_collections.keys())
+
     def is_valid_software_type(self, software_type: str) -> bool:
         return software_type in self.__metadata_collections
 

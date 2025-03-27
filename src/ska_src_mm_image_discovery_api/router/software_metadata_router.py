@@ -48,3 +48,10 @@ async def update_software_metadata(software_discovery_controller=Depends(get_sof
 async def delete_software_metadata(software_discovery_controller=Depends(get_software_discovery_controller)):
     """ Delete Software metadata """
     return await software_discovery_controller.delete_software()
+
+
+@software_metadata_router.get('/types' , response_model = list)
+@handle_exceptions
+async def get_unique_software_types(software_discovery_controller=Depends(get_software_discovery_controller)):
+    """ Get unique software types  """
+    return await software_discovery_controller.software_types()

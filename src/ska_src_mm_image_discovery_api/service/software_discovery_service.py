@@ -33,3 +33,6 @@ class SoftwareDiscoveryService:
 
     async def delete_software_metadata(self) -> JSONResponse:
         raise HTTPException(status_code=501, detail="Not Implemented")
+
+    async def get_software_types(self) -> JSONResponse:
+        return JSONResponse(content=self.mongo_config.get_all_software_types)
