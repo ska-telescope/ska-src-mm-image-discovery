@@ -7,7 +7,6 @@ from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.decorators.db_exceptions import handle_db_exceptions
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
-from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata
 
 
@@ -19,7 +18,6 @@ class MongoRepository:
         self.client = mongo_client
         self.mongo_config = mongo_config
         self.db = self.client[mongo_config.DB]
-        self.images_collection = self.db[mongo_config.images_collection]
 
     async def ping(self):
         try:
@@ -40,8 +38,11 @@ class MongoRepository:
             collection_name = self.mongo_config.get_collection_name("docker-container")
             collection = self.db[collection_name]
 
-            criteria = {"metadata.specifications": specification} if specification is not None else {}
+            criteria = {"metadata.specifications": specification} if specification is not None else {
+                "metadata.specifications": {"$exists": True, "$ne": []}}
+            self.logger.debug("criteria: %s", criteria)
             metadata_list = await collection.find(criteria).to_list(length=None)
+            self.logger.debug("metadata_list: %s", metadata_list)
             return metadata_list
         except ServerSelectionTimeoutError as e:
             raise TimeoutError(f"MongoDB server selection timed out: {e}")
@@ -57,10 +58,9 @@ class MongoRepository:
         collection_name = self.mongo_config.get_collection_name(software_type)
         collection = self.db[collection_name]
         await collection.update_one(
-            {'executable.location': software_metadata.executable.location},
+            {'executable.location': {'$in': software_metadata.executable.location}},
             {'$set': software_metadata.dict()},
             upsert=True
-
         )
         return software_metadata
 

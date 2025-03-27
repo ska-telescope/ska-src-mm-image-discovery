@@ -69,18 +69,23 @@ for harbor_host in harbor_hosts:
 
                 labels = [label['name'] for label in labels]
 
+                digest = artifact['digest']
+                if not digest:
+                    print(f"No digest found for {image_id}")
+                    continue
+
                 refined_artifact = {
                     "executable": {
-                        "location": image_id,
+                        "location": [image_id],
                         "name": name,
                         "type": "docker-container",
+                        "digest": digest,
                     },
                     "metadata": {
                         "description": f"This is a {",".join(labels)} {name} image",
                         "version": tag,
                         "tag": tag,
                         "authorName": author_name,
-                        "digest": artifact['digest'],
                         "specifications": labels
                     },
                     "resources": {

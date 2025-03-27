@@ -55,10 +55,7 @@ async def get_mongo_repository(
         mongo_config: MongoConfig = Depends(get_mongo_config),
         mongo_client: AsyncMongoClient = Depends(get_mongo_client)
 ) -> MongoRepository:
-    # return MongoRepository(mongo_config, mongo_client)
-    repository = MongoRepository(mongo_config, mongo_client)
-    await repository.ping()
-    return repository
+    return MongoRepository(mongo_config, mongo_client)
 
 
 # return a bean of Skopeo

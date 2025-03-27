@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 
 from pydantic import BaseModel, Field
@@ -6,7 +7,8 @@ from pydantic import BaseModel, Field
 class Executable(BaseModel):
     name: str
     type: str
-    location: str
+    location: list[str]
+    digest: str | None
 
 
 class Metadata(BaseModel):
@@ -14,7 +16,6 @@ class Metadata(BaseModel):
     version: str
     tag: str | None
     authorName: str | None # TODO - change to author_name
-    digest: str | None
     specifications: List[str] | None
 
 

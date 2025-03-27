@@ -48,16 +48,17 @@ class TestMetadataService:
                     "$oid": "67dab12a88a5719a80afa262"
                 },
                 "executable": {
-                    "location": "images.canfar.net/canfar/base-3.11:v0.4.2",
+                    "location": ["images.canfar.net/canfar/base-3.11:v0.4.2"],
                     "name": "base-3.11",
-                    "type": "docker-container"
+                    "type": "docker-container",
+                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
                 },
                 "metadata": {
                     "description": "This is a  base-3.11 image",
                     "version": "v0.4.2",
                     "tag": "v0.4.2",
                     "authorName": "majorb",
-                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
+
                     "specifications": []
                 },
                 "resources": {
@@ -81,8 +82,9 @@ class TestMetadataService:
     async def test_get_all_metadata_by_type(self, metadata_service):
         expected_metadata = [
             ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.2', name='base-3.11', author_name='majorb',
-                          types=[], digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076',
-                          tag='v0.4.2'),
+                          types=[],
+                          tag='v0.4.2',
+                          digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076'),
         ]
 
         metadata_service.mongo_repository.get_all_image_metadata.return_value = [
@@ -91,16 +93,16 @@ class TestMetadataService:
                     "$oid": "67dab12a88a5719a80afa262"
                 },
                 "executable": {
-                    "location": "images.canfar.net/canfar/base-3.11:v0.4.2",
+                    "location": ["images.canfar.net/canfar/base-3.11:v0.4.2"],
                     "name": "base-3.11",
-                    "type": "docker-container"
+                    "type": "docker-container",
+                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
                 },
                 "metadata": {
                     "description": "This is a  base-3.11 image",
                     "version": "v0.4.2",
                     "tag": "v0.4.2",
                     "authorName": "majorb",
-                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
                     "specifications": []
                 },
                 "resources": {
@@ -133,16 +135,17 @@ class TestMetadataService:
                 "$oid": "67dab12a88a5719a80afa262"
             },
             "executable": {
-                "location": "images.canfar.net/canfar/base-3.11:v0.4.2",
+                "location": ["images.canfar.net/canfar/base-3.11:v0.4.2"],
                 "name": "base-3.11",
-                "type": "docker-container"
+                "type": "docker-container",
+                "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
             },
             "metadata": {
                 "description": "This is a  base-3.11 image",
                 "version": "v0.4.2",
                 "tag": "v0.4.2",
                 "authorName": "majorb",
-                "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
+
                 "specifications": []
             },
             "resources": {
@@ -191,9 +194,9 @@ class TestMetadataService:
         }
 
         software_metadata = SoftwareMetadata(
-            executable=Executable(name='name-1', type='docker-container', location=image_url),
+            executable=Executable(name='name-1', type='docker-container', location=[image_url], digest='digest', ),
             metadata=Metadata(description='This is a docker container with name name-1', version='v0.4.2', tag='v0.4.2',
-                              authorName='author_name', digest='digest', specifications=['type_1', 'type_2']),
+                              authorName='author_name', specifications=['type_1', 'type_2']),
             resources=Resources(cores=ResourceLimit(min=5, max=15), memory=ResourceLimit(min=3, max=9)), )
 
         image_metadata = ImageMetadata(image_id=image_url,

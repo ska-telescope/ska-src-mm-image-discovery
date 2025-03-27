@@ -18,18 +18,6 @@ class MongoConfig:
         return self.metadata_db
 
     @property
-    def images_collection(self) -> str:
-        return self.__metadata_collections["images"]
-
-    @property
-    def docker_container_collection(self) -> str:
-        return self.__metadata_collections["docker-container"]
-
-    @property
-    def jupyter_notebook_collection(self) -> str:
-        return self.__metadata_collections["jupyter-notebook"]
-
-    @property
     def get_all_software_types(self) -> list:
         return list(self.__metadata_collections.keys())
 

@@ -13,6 +13,20 @@ from src.ska_src_mm_image_discovery_api.models.software_metadata import Software
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 
 
+def extract_image_metadata(metadata: dict):
+    image_executable = metadata.get('executable')
+    image_metadata = metadata.get('metadata')
+
+    return ImageMetadata(
+        image_id=image_executable.get('location')[0],
+        name=image_executable.get('name'),
+        author_name=image_metadata.get("authorName"),
+        types=image_metadata.get("specifications"),
+        digest=image_executable.get("digest"),
+        tag=image_metadata.get("tag")
+    )
+
+
 @singleton
 class ImageMetadataService:
     logger = logging.getLogger("uvicorn")
@@ -22,44 +36,23 @@ class ImageMetadataService:
         self.mongo_repository = mongo_repository
         self.skopeo = skopeo
 
-    # todo: should accept empty metadata filter
     async def get_all_image_metadata(self, type_name: str | None) -> list[ImageMetadata]:
         documents = await self.mongo_repository.get_all_image_metadata(type_name)
         image_metadata_list = []
 
         for metadata in documents:
-            image_executable = metadata.get('executable')
-            image_metadata = metadata.get('metadata')
-
-            image_metadata_list.append(ImageMetadata(
-                image_id=image_executable.get('location'),
-                name=image_executable.get('name'),
-                author_name=image_metadata.get("authorName"),
-                types=image_metadata.get("specifications"),
-                digest=image_metadata.get("digest"),
-                tag=image_metadata.get("tag")
-            ))
+            if metadata is None:
+                continue
+            image_metadata_list.append(extract_image_metadata(metadata))
 
         return image_metadata_list
 
     async def get_image_metadata_by_image_location(self, image_location: str) -> ImageMetadata:
         metadata = await self.mongo_repository.get_image_metadata_by_location(image_location)
-
         if metadata is None:
             self.logger.error(f"Image with id {image_location} not found")
             raise HTTPException(status_code=404, detail=f"Image with id {image_location} not found")
-
-        image_executable = metadata.get('executable')
-        image_metadata = metadata.get('metadata')
-
-        return ImageMetadata(
-            image_id=image_executable.get('location'),
-            name=image_executable.get('name'),
-            author_name=image_metadata.get("authorName"),
-            types=image_metadata.get("specifications"),
-            digest=image_metadata.get("digest"),
-            tag=image_metadata.get("tag")
-        )
+        return extract_image_metadata(metadata)
 
     async def inspect_image_metadata(self, image_url: str) -> dict:
         return await self.skopeo.inspect(image_url)
@@ -72,14 +65,20 @@ class ImageMetadataService:
         (image_name, tag) = self.__name_tag_from_image_url(image_url)
         image_name = metadata.get("Name", image_name)
         self.logger.debug(f"Image name is {image_name}, tag is {tag}")
+        digest = raw_image_metadata.get(self.oci_labels_config.DIGEST_KEY)
+        if not digest:
+            raise HTTPException(status_code=404, detail="digest not found for the image")
 
         software_metadata = SoftwareMetadata(
-            executable=Executable(name=image_name, type="docker-container", location=image_url),
+            executable=Executable(name=image_name,
+                                  type="docker-container",
+                                  location=[image_url],
+                                  digest=digest,
+                                  ),
             metadata=Metadata(description=f"This is a docker container with name {image_name}",
                               version=metadata.get("Version"),
                               tag=tag,
                               authorName=metadata.get("Author"),
-                              digest=raw_image_metadata.get(self.oci_labels_config.DIGEST_KEY),
                               specifications=metadata.get("Types")),
             resources=Resources(**self.oci_labels_config.DEFAULT_OCI_RESOURCE)
         )
@@ -91,7 +90,7 @@ class ImageMetadataService:
             name=image_name,
             author_name=metadata.get("Author"),
             types=metadata.get("Types"),
-            digest=raw_image_metadata.get(self.oci_labels_config.DIGEST_KEY),
+            digest=digest,
             tag=metadata.get("Version")
         )
         return image_metadata

@@ -5,11 +5,10 @@ application:
 database:
   uri: ${MONGO_URI:mongodb://localhost:27017/mydb}
   name: software_metadata
-  collections:
-    ## software_type: collection_name
-    images: images #todo : do we even need this  ???
+  collections: ## software_type: collection_name
     docker-container: docker-container
     jupyter-notebook: jupyter-notebook
+    singularity-container: singularity-container
 
 oci:
   labels:

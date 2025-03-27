@@ -2,14 +2,16 @@
   "executable": {
     "name": "carta",
     "type": "docker-container",
-    "location": "images.canfar.net/skaha/carta:latest"
+    "location": [
+      "images.canfar.net/skaha/carta:latest"
+    ],
+    "digest": "sha256:9697ef53656d8b9000e29d100fb971236f76269a8bb67fc20bb67a217f409ca9"
   },
   "metadata": {
     "description": "carta is a tool for the analysis of CANFAR data.",
     "version": "latest",
     "tag": "latest",
     "authorName": "admin",
-    "digest": "sha256:9697ef53656d8b9000e29d100fb971236f76269a8bb67fc20bb67a217f409ca9",
     "specifications": [
       "carta"
     ]

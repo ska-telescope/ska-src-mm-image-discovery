@@ -1,14 +1,14 @@
 executable:
   name: canucs
   type: "docker-container"
-  location: "images.canfar.net/canucs/canucs:1.3.0"
+  location: [ "images.canfar.net/canucs/canucs:1.3.0" ]
+  digest: "sha256:e0042dd7d213c2a918568af433a228744a071fcb994ea6a8feaf9307c6e7d8d1"
 
 metadata:
   description: "CANUCS is a tool for the analysis of CANFAR data."
   version: "1.3.0"
   tag: "1.3.0"
   authorName: "admin"
-  digest: "sha256:e0042dd7d213c2a918568af433a228744a071fcb994ea6a8feaf9307c6e7d8d1"
   specifications: [ "notebook" ]
 
 resources:

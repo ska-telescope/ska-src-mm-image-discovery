@@ -9,7 +9,6 @@ from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.errors import ConnectionFailure
 
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
-from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata, ResourceLimit, Resources, \
     Metadata, Executable
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
@@ -22,9 +21,9 @@ class TestMongoRepository:
     @pytest.fixture(autouse=True)
     def software_metadata(self):
         return SoftwareMetadata(
-            executable=Executable(name='name', type='type', location='location'),
+            executable=Executable(name='name', type='type', location=['location'], digest='digest', ),
             metadata=Metadata(description='description', version='version', tag='tag',
-                              authorName='authorName', digest='digest', specifications=["carta"]),
+                              authorName='authorName', specifications=["carta"]),
             resources=Resources(cores=ResourceLimit(min=5, max=15),
                                 memory=ResourceLimit(min=3, max=9))
         )
@@ -127,8 +126,9 @@ class TestMongoRepository:
     async def test_add_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection , software_metadata):
         saved_metadata = await mongo_repository.add_software_metadata('docker-container', software_metadata)
 
-        mongo_collection.update_one.assert_called_once_with({'executable.location': 'location'},
-                                                            {'$set': software_metadata}, upsert=True)
+        mongo_collection.update_one.assert_called_once_with({'executable.location': {'$in': ['location']}},
+                                                            {'$set': software_metadata},
+                                                            upsert=True)
         assert saved_metadata == software_metadata
 
     async def test_get_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection , software_metadata):

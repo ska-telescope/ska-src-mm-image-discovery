@@ -26,16 +26,17 @@ class TestSoftwareDiscoveryService:
                     "$oid": "67dab12a88a5719a80afa262"
                 },
                 "executable": {
-                    "location": "images.canfar.net/canfar/base-3.11:v0.4.2",
+                    "location": ["images.canfar.net/canfar/base-3.11:v0.4.2"],
                     "name": "base-3.11",
-                    "type": "docker-container"
+                    "type": "docker-container",
+                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
                 },
                 "metadata": {
                     "description": "This is a  base-3.11 image",
                     "version": "v0.4.2",
                     "tag": "v0.4.2",
                     "authorName": "majorb",
-                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
+
                     "specifications": []
                 },
                 "resources": {
@@ -55,10 +56,10 @@ class TestSoftwareDiscoveryService:
         assert software_metadata_list == [
             SoftwareMetadata(
                 executable=Executable(name='base-3.11', type='docker-container',
-                                      location="images.canfar.net/canfar/base-3.11:v0.4.2"),
+                                      location=["images.canfar.net/canfar/base-3.11:v0.4.2"],
+                                      digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076'),
                 metadata=Metadata(description='This is a  base-3.11 image', version='v0.4.2', tag='v0.4.2',
                                   authorName='majorb',
-                                  digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076',
                                   specifications=[]),
                 resources=Resources(cores=ResourceLimit(min=5, max=15), memory=ResourceLimit(min=3, max=9)), )
         ]
