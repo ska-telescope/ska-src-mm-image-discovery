@@ -1,5 +1,5 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Lobster', cursive;
   line-height: 1.5;
   font-weight: 400;
 
@@ -45,7 +45,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #f9f9f9; /* Changed to a lighter color */
-  color: #213547; /* Ensure the text color is dark */
+  color: #E5096A; /* Ensure the text color is dark */
   cursor: pointer;
   transition: border-color 0.25s;
 }

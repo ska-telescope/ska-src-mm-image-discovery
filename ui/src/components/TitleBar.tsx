@@ -5,9 +5,9 @@ import AppBar from "@mui/material/AppBar";
 
 export default function TitleBar() {
     return (
-        <AppBar>
+        <AppBar sx={{ backgroundColor: "#E5096A" }}>
             <Toolbar>
-                <Typography variant="h6">SKA SRC MM Image Discovery</Typography>
+                <Typography variant="h6" fontWeight="bold" fontFamily="monospace">SKA SRC MM Image Discovery</Typography>
             </Toolbar>
         </AppBar>
     )

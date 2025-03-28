@@ -31,7 +31,7 @@ export default function Dashboard() {
                 />
                 <TextField id="outlined-basic" label="Software name" variant="outlined" sx={{width: 300}}
                            onChange={event => setSoftwareName(event.target.value)}/>
-                <Button variant="contained" color="primary" name={"Search"} loading={softwareMetadata.isPending}
+                <Button variant="contained" sx={{ backgroundColor: "#E5096A" }} name={"Search"} loading={softwareMetadata.isPending}
                         onClick={() => softwareMetadata.mutate({
                             softwareType,
                             softwareName
@@ -41,13 +41,10 @@ export default function Dashboard() {
             {softwareMetadata.isError &&
                 <Typography color="error">Error: {softwareMetadata.error.message}</Typography>}
 
-            {softwareMetadata.isPending || !softwareMetadata.isSuccess ? (
-                <ResponseSection/>
-            ) : (
+            {softwareMetadata.isSuccess && (
                 softwareMetadata.data.map((metadata: any, index: number) => (
                     <ResponseSection key={index} response={metadata}/>
-                ))
-            )}
+                )))}
 
 
         </Box>
