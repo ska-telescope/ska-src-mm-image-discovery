@@ -1,10 +1,12 @@
-import {Accordion, AccordionSummary, Autocomplete, Button, TextField} from "@mui/material";
+import { Autocomplete, Button, TextField} from "@mui/material";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {getSoftwareMetadata, getSoftwareTypes} from "../api/softwareMetadata.ts";
 import Box from "@mui/material/Box";
 import {useState} from "react";
 import Typography from "@mui/material/Typography";
-import {SoftwareDetails, SoftwareMetadata} from "../types/metadataTypes.ts";
+import {SoftwareDetails} from "../types/metadataTypes.ts";
+import ResponseSection from "./ResponseSection.tsx";
+
 
 export default function Dashboard() {
     const {data: options = [], isLoading, isError} = useQuery({
@@ -18,8 +20,8 @@ export default function Dashboard() {
     const softwareMetadata = useMutation<any, Error, SoftwareDetails>({mutationFn: getSoftwareMetadata});
 
     return (
-        <Box display={"flex"} flexDirection={"column"} gap={2}>
-            <Box display="flex" flexDirection="row" gap={2} p={2}>
+        <Box display={"flex"} flexDirection={"column"} gap={3}>
+            <Box display="flex" flexDirection="row" gap={2} p={2} pl={0}>
                 <Autocomplete
                     disabled={isLoading || isError}
                     options={options}
@@ -35,17 +37,19 @@ export default function Dashboard() {
                             softwareName
                         })}> Search </Button>
             </Box>
-            <Box display={"flex"} flexDirection={"column"}>
-                {softwareMetadata.isError &&
-                    <Typography color="error">Error: {softwareMetadata.error.message}</Typography>}
-                {softwareMetadata.isSuccess && softwareMetadata.data && softwareMetadata.data.map((software: SoftwareMetadata, index: number) => (
-                    <Accordion key={index}>
-                        <AccordionSummary>
-                            <Typography
-                                sx={{fontWeight: "bold"}}>{software.executable.name} {software.metadata.version}</Typography>
-                        </AccordionSummary>
-                    </Accordion>))}
-            </Box>
+
+            {softwareMetadata.isError &&
+                <Typography color="error">Error: {softwareMetadata.error.message}</Typography>}
+
+            {softwareMetadata.isPending || !softwareMetadata.isSuccess ? (
+                <ResponseSection/>
+            ) : (
+                softwareMetadata.data.map((metadata: any, index: number) => (
+                    <ResponseSection key={index} response={metadata}/>
+                ))
+            )}
+
+
         </Box>
     )
 }

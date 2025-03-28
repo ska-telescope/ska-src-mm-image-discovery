@@ -7,9 +7,6 @@ from src.ska_src_mm_image_discovery_api.decorators.exceptions import handle_exce
 from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata
 from src.ska_src_mm_image_discovery_api.rest.dependency import get_software_discovery_controller
 
-from fastapi.encoders import jsonable_encoder
-from starlette.responses import JSONResponse
-
 software_metadata_router = APIRouter(
     tags=["Software Metadata"],
     prefix="/software",
@@ -51,6 +48,7 @@ async def delete_software_metadata(software_discovery_controller=Depends(get_sof
 
 
 @software_metadata_router.get('/types' , response_model = list)
+@version(1)
 @handle_exceptions
 async def get_unique_software_types(software_discovery_controller=Depends(get_software_discovery_controller)):
     """ Get unique software types  """
