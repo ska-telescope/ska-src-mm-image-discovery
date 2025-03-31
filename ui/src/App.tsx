@@ -20,10 +20,7 @@ export default function App() {
                 <Sidebar/>
                 <Routes>
                     <Route path={"/software/search"} element={<SoftwareDiscovery />}/>
-                    <Route path={"/image-discovery/id"} element={<ImageDiscovery  searchType={"id"}/>}/>
-                    <Route path={"/image-discovery/type"} element={<ImageDiscovery searchType={"type"}/>}/>
-
-
+                    <Route path={"/image-discovery/:searchType"} element={<ImageDiscovery/>}/>
                 </Routes>
             </Box>
         </Box>

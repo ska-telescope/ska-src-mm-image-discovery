@@ -24,7 +24,7 @@ export default function Sidebar() {
                     <Collapse in={openSoftware} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <Button component={Link} to="/software/search" variant="contained">
+                                <Button component={Link} to="/software/search" variant="text" color={"secondary"}>
                                     GET Software Metadata
                                 </Button>
                             </ListItemButton>
@@ -39,12 +39,12 @@ export default function Sidebar() {
                     <Collapse in={openImage} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <Button component={Link} to="/image-discovery/id" variant="contained">
+                                <Button component={Link} to="/image-discovery/id" variant="text" color={"secondary"}>
                                     GET Image by ID
                                 </Button>
                             </ListItemButton>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <Button component={Link} to="/image-discovery/type" variant="contained">
+                                <Button component={Link} to="/image-discovery/type" variant="text" color={"secondary"}>
                                     GET Image by Type
                                 </Button>
                             </ListItemButton>

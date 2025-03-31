@@ -24,7 +24,7 @@ export default function SoftwareDiscoveryResponse({response}: ResponseSectionPro
                 id="panel1-header"
             >
                 <Typography component="span" sx={{fontStyle: 'italic', color: 'gray'}}>
-                    <strong>{response ? `${response.executable.name}:${response.metadata.version}` : "GET software/search sample response"}</strong>
+                    <strong>{response ? `${response.executable.name}` : "GET software/search sample response"}</strong>
                 </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{padding: 5}}>
@@ -39,4 +39,4 @@ export default function SoftwareDiscoveryResponse({response}: ResponseSectionPro
         </Accordion>
     )
 
-}   // End of SoftwareDiscoveryResponse
+}

@@ -20,7 +20,7 @@ export default function SoftwareDiscovery() {
     const softwareMetadata = useMutation<any, Error, SoftwareDetails>({mutationFn: getSoftwareMetadata});
 
     return (
-        <Box display={"flex"} flexDirection={"column"} gap={3}>
+        <Box display={"flex"} flexDirection={"column"} gap={3} marginLeft={4}>
             <Box display="flex" flexDirection="row" gap={2} p={2} pl={0}>
                 <Autocomplete
                     disabled={isLoading || isError}
