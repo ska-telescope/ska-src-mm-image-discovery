@@ -34,3 +34,12 @@ export type SoftwareDetails = {
     softwareName: string | null,
     softwareType: string | null,
 }
+
+export type ImageMetadata = {
+    image_id: string;
+    name: string;
+    author_name : string;
+    types: string[];
+    digest: string;
+    tag: string;
+}

@@ -14,7 +14,7 @@ interface ResponseSectionProps {
     response?: SoftwareMetadata;
 }
 
-export default function ResponseSection({response}: ResponseSectionProps) {
+export default function SoftwareDiscoveryResponse({response}: ResponseSectionProps) {
 
     return (
         <Accordion>
@@ -39,4 +39,4 @@ export default function ResponseSection({response}: ResponseSectionProps) {
         </Accordion>
     )
 
-}   // End of ResponseSection
+}   // End of SoftwareDiscoveryResponse

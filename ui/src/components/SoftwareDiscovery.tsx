@@ -5,10 +5,10 @@ import Box from "@mui/material/Box";
 import {useState} from "react";
 import Typography from "@mui/material/Typography";
 import {SoftwareDetails} from "../types/metadataTypes.ts";
-import ResponseSection from "./ResponseSection.tsx";
+import SoftwareDiscoveryResponse from "./SoftwareDiscoveryResponse.tsx";
 
 
-export default function Dashboard() {
+export default function SoftwareDiscovery() {
     const {data: options = [], isLoading, isError} = useQuery({
         queryKey: ["softwareTypes"],
         queryFn: getSoftwareTypes,
@@ -43,7 +43,7 @@ export default function Dashboard() {
 
             {softwareMetadata.isSuccess && (
                 softwareMetadata.data.map((metadata: any, index: number) => (
-                    <ResponseSection key={index} response={metadata}/>
+                    <SoftwareDiscoveryResponse key={index} response={metadata}/>
                 )))}
 
 
