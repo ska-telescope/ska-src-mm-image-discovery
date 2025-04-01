@@ -27,7 +27,7 @@ export default function ImageDiscoveryResponse({response}: ResponseSectionProps)
             </AccordionSummary>
             <AccordionDetails sx={{padding: 5}}>
                 <Typography>{response ? "Image Metadata" : "Sample Response"}</Typography>
-                <Box sx={{height: 500, width: 900, overflow: 'auto'}}>
+                <Box sx={{height: "30vh", width: 900, overflow: 'auto'}}>
                     <SyntaxHighlighter language="json" style={materialDark}>
                         {response ? JSON.stringify(response, null, 2) : codeString}
                     </SyntaxHighlighter>

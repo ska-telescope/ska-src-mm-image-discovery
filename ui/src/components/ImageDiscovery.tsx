@@ -26,6 +26,7 @@ export default function ImageDiscovery() {
             <Box display="flex" flexDirection="row" gap={2} p={2} pl={0}>
                 <TextField id="outlined-basic" label={searchType === "type" ? "Software type" : "Software Id"}
                            variant="outlined" sx={{width: 300}}
+                           value={searchParam}
                            onChange={event => setSearchParam(event.target.value)}/>
 
                 <Button variant="contained" sx={{backgroundColor: "#E5096A"}} name={"Search"}
