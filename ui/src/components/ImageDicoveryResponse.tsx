@@ -23,7 +23,7 @@ export default function ImageDiscoveryResponse({response}: ResponseSectionProps)
                 id="panel1-header"
             >
                 <Typography component="span" sx={{fontStyle: 'italic', color: 'gray'}}>
-                    <strong>{response ? `${response?.image_id}:${response?.tag}` : "GET software/search sample response"}</strong>
+                    <strong>{response?.image_id}</strong>
                 </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{padding: 5}}>
