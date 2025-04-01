@@ -14,7 +14,6 @@ interface ResponseSectionProps {
 }
 
 export default function ImageDiscoveryResponse({response}: ResponseSectionProps) {
-    console.log('ImageDiscoveryResponse response:', response);
     return (
         <Accordion>
             <AccordionSummary

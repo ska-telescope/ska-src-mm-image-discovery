@@ -9,8 +9,6 @@ export const getSoftwareMetadata = async (softwareMetadata: SoftwareDetails) => 
         params.software_name = softwareMetadata.softwareName;
     }
     const response = await axios.get<SoftwareMetadata>(`${import.meta.env.VITE_BASE_URL}/v1/software/search`, {params});
-
-    console.log(response.data)
     return response.data
 }
 
