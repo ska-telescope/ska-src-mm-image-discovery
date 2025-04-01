@@ -23,7 +23,7 @@ export default function Sidebar() {
                     </ListItemButton>
                     <Collapse in={openSoftware} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton component={Link} to="/software/search" sx={{ pl: 4  , color:"#E5096A" }}>
+                            <ListItemButton component={Link} to="/web" sx={{ pl: 4  , color:"#E5096A" }}>
                                 GET Software Metadata
                             </ListItemButton>
                         </List>
@@ -36,10 +36,10 @@ export default function Sidebar() {
                     </ListItemButton>
                     <Collapse in={openImage} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
-                            <ListItemButton component={Link} to="/image-discovery/id" sx={{ pl: 4 , color:"#E5096A"}}>
+                            <ListItemButton component={Link} to="/web/image-discovery/id" sx={{ pl: 4 , color:"#E5096A"}}>
                                 GET Image by ID
                             </ListItemButton>
-                            <ListItemButton component={Link} to="/image-discovery/type" sx={{ pl: 4 , color:"#E5096A" }}>
+                            <ListItemButton component={Link} to="/web/image-discovery/type" sx={{ pl: 4 , color:"#E5096A" }}>
                                 GET Image by Type
                             </ListItemButton>
                         </List>
