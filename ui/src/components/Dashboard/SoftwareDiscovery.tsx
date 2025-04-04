@@ -1,11 +1,11 @@
 import { Autocomplete, Button, TextField} from "@mui/material";
 import {useMutation, useQuery} from "@tanstack/react-query";
-import {getSoftwareMetadata, getSoftwareTypes} from "../api/softwareMetadata.ts";
+import {getSoftwareMetadata, getSoftwareTypes} from "../../api/softwareMetadata.ts";
 import Box from "@mui/material/Box";
 import {useState} from "react";
 import Typography from "@mui/material/Typography";
-import {SoftwareDetails} from "../types/metadataTypes.ts";
-import SoftwareDiscoveryResponse from "./SoftwareDiscoveryResponse.tsx";
+import {SoftwareDetails} from "../../types/metadataTypes.ts";
+import SoftwareDiscoveryResponse from "../Responses/SoftwareDiscoveryResponse.tsx";
 
 
 export default function SoftwareDiscovery() {

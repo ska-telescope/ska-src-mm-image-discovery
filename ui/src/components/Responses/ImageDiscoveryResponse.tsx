@@ -6,16 +6,14 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {materialDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Box from "@mui/material/Box";
-import {codeString} from "../assets/codeString.ts";
-import {SoftwareMetadata} from "../types/metadataTypes.ts";
-
+import {codeString} from "../../assets/codeString.ts";
+import {ImageMetadata} from "../../types/metadataTypes.ts";
 
 interface ResponseSectionProps {
-    response?: SoftwareMetadata;
+    response?: ImageMetadata;
 }
 
-export default function SoftwareDiscoveryResponse({response}: ResponseSectionProps) {
-
+export default function ImageDiscoveryResponse({response}: ResponseSectionProps) {
     return (
         <Accordion>
             <AccordionSummary
@@ -24,21 +22,17 @@ export default function SoftwareDiscoveryResponse({response}: ResponseSectionPro
                 id="panel1-header"
             >
                 <Typography component="span" sx={{fontStyle: 'italic', color: 'gray'}}>
-                    <strong>
-                        {response ? `${response.executable.name}:${response.metadata.version}` : "GET software/search sample response"}
-                    </strong>
+                    <strong>{response?.image_id}</strong>
                 </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{padding: 5}}>
-                <Typography>{response ? "Software Metadata" : "Sample Response"}</Typography>
-                <Box sx={{height: 500, width: 900, overflow: 'auto'}}>
+                <Typography>{response ? "Image Metadata" : "Sample Response"}</Typography>
+                <Box sx={{height: "30vh", width: 900, overflow: 'auto'}}>
                     <SyntaxHighlighter language="json" style={materialDark}>
                         {response ? JSON.stringify(response, null, 2) : codeString}
                     </SyntaxHighlighter>
                 </Box>
-
             </AccordionDetails>
         </Accordion>
-    )
-
+    );
 }

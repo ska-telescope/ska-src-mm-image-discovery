@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
-import TitleBar from "./components/TitleBar.tsx";
-import SoftwareDiscovery from "./components/SoftwareDiscovery.tsx";
-import Sidebar from "./components/Sidebar.tsx";
+import TitleBar from "./components/Header/TitleBar.tsx";
+import SoftwareDiscovery from "./components/Dashboard/SoftwareDiscovery.tsx";
+import Sidebar from "./components/Sidebar/Sidebar.tsx";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
-import ImageDiscovery from "./components/ImageDiscovery.tsx";
+import ImageDiscovery from "./components/Dashboard/ImageDiscovery.tsx";
 
 
 export default function App() {

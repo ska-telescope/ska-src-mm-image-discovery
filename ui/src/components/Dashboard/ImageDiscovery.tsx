@@ -3,8 +3,8 @@ import {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import {Button, TextField} from "@mui/material";
 import Typography from "@mui/material/Typography";
-import {getImageById, getImagebyType} from "../api/ImageMetadata";
-import ImageDiscoveryResponse from "./ImageDiscoveryResponse.tsx";
+import {getImageById, getImagebyType} from "../../api/ImageMetadata.ts";
+import ImageDiscoveryResponse from "../Responses/ImageDiscoveryResponse.tsx";
 import {useParams} from "react-router-dom";
 
 
