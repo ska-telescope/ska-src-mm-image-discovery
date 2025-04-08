@@ -13,7 +13,7 @@ print(f"Harbor hosts: {harbor_hosts}")
 # MongoDB connection
 mongo_db_uri = os.getenv('MONGO_URI', 'mongodb://root:password@localhost:27017/?authSource=admin')
 mongo_db_name = os.getenv('MONGO_DB_NAME', 'software_metadata')
-collection_name = os.getenv('MONGO_COLLECTION_NAME', 'docker-container')
+collection_name = os.getenv('MONGO_COLLECTION_NAME', 'canfar-images')
 
 mongo_client = MongoClient(mongo_db_uri)
 db = mongo_client[mongo_db_name]
@@ -27,7 +27,7 @@ except Exception as e:
     exit(1)
 
 # Create index if it does not exist
-collection.create_index([('executable.location', ASCENDING)], name='image_location_unique_index', unique=True)
+collection.create_index([('image_id', ASCENDING)], name='image_location_unique_index', unique=True)
 
 for harbor_host in harbor_hosts:
     url = f"https://{harbor_host}/api/v2.0/projects?page_size=100"
@@ -65,7 +65,7 @@ for harbor_host in harbor_hosts:
 
                 if not labels:
                     print(f"No labels found for {image_id}")
-                    labels = []
+                    continue
 
                 labels = [label['name'] for label in labels]
 
@@ -75,33 +75,15 @@ for harbor_host in harbor_hosts:
                     continue
 
                 refined_artifact = {
-                    "executable": {
-                        "location": [image_id],
-                        "name": name,
-                        "type": "docker-container",
-                        "digest": digest,
-                    },
-                    "metadata": {
-                        "description": f"This is a {",".join(labels)} {name} image",
-                        "version": tag,
-                        "tag": tag,
-                        "authorName": author_name,
-                        "specifications": labels
-                    },
-                    "resources": {
-                        "cores": {
-                            "min": 5,
-                            "max": 15
-                        },
-                        "memory": {
-                            "min": 3,
-                            "max": 9
-                        }
-                    }
+                    'image_id': image_id,
+                    'tag': tag,
+                    'types': labels,
+                    'digest': artifact['digest'],
+                    'author_name': author_name,
                 }
 
                 collection.update_one(
-                    {'executable.location': image_id},
+                    {'image_id': image_id},
                     {'$set': refined_artifact},
                     upsert=True
                 )

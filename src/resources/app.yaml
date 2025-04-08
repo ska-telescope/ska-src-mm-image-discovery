@@ -6,6 +6,7 @@ database:
   uri: ${MONGO_URI:mongodb://localhost:27017/mydb}
   name: software_metadata
   collections: ## software_type: collection_name
+    canfar-images: canfar-images
     docker-container: docker-container
     jupyter-notebook: jupyter-notebook
     singularity-container: singularity-container
