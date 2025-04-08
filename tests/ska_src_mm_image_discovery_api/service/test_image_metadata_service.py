@@ -37,145 +37,86 @@ class TestMetadataService:
 
     async def test_get_all_metadata(self, metadata_service):
         expected_metadata = [
-            ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.2', name='base-3.11', author_name='majorb',
-                          types=[], digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076',
-                          tag='v0.4.2'),
+            ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.1', name='base-3.11:v0.4.1',
+                          author_name='majorb',
+                          types=["headless"],
+                          digest='sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8',
+                          tag='v0.4.1'),
         ]
 
-        metadata_service.mongo_repository.get_all_image_metadata.return_value = [
-            {
-                "_id": {
-                    "$oid": "67dab12a88a5719a80afa262"
-                },
-                "executable": {
-                    "location": ["images.canfar.net/canfar/base-3.11:v0.4.2"],
-                    "name": "base-3.11",
-                    "type": "docker-container",
-                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
-                },
-                "metadata": {
-                    "description": "This is a  base-3.11 image",
-                    "version": "v0.4.2",
-                    "tag": "v0.4.2",
-                    "authorName": "majorb",
-
-                    "specifications": []
-                },
-                "resources": {
-                    "cores": {
-                        "min": 5,
-                        "max": 15
-                    },
-                    "memory": {
-                        "min": 3,
-                        "max": 9
-                    }
-                }
-            }
+        metadata_service.mongo_repository.get_all_image_metadata.return_value = [{
+            "_id": {"$oid": "67f4f834d73d83fdccf87e5c"},
+            "author_name": "majorb",
+            "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
+            "image_id": "images.canfar.net/canfar/base-3.11:v0.4.1",
+            "name": "base-3.11:v0.4.1",
+            "tag": "v0.4.1",
+            "types": ["headless"]},
         ]
 
         result = await metadata_service.get_all_image_metadata("type_1")
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with('type_1')
+        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with({"types": "type_1"})
 
     async def test_get_all_metadata_by_type(self, metadata_service):
         expected_metadata = [
-            ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.2', name='base-3.11', author_name='majorb',
-                          types=[],
-                          tag='v0.4.2',
-                          digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076'),
+            ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.1', name='base-3.11:v0.4.1',
+                          author_name='majorb',
+                          types=["headless"],
+                          digest='sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8',
+                          tag='v0.4.1'),
         ]
 
-        metadata_service.mongo_repository.get_all_image_metadata.return_value = [
-            {
-                "_id": {
-                    "$oid": "67dab12a88a5719a80afa262"
-                },
-                "executable": {
-                    "location": ["images.canfar.net/canfar/base-3.11:v0.4.2"],
-                    "name": "base-3.11",
-                    "type": "docker-container",
-                    "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
-                },
-                "metadata": {
-                    "description": "This is a  base-3.11 image",
-                    "version": "v0.4.2",
-                    "tag": "v0.4.2",
-                    "authorName": "majorb",
-                    "specifications": []
-                },
-                "resources": {
-                    "cores": {
-                        "min": 5,
-                        "max": 15
-                    },
-                    "memory": {
-                        "min": 3,
-                        "max": 9
-                    }
-                }
-            }
+        metadata_service.mongo_repository.get_all_image_metadata.return_value = [{
+            "_id": {"$oid": "67f4f834d73d83fdccf87e5c"},
+            "author_name": "majorb",
+            "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
+            "image_id": "images.canfar.net/canfar/base-3.11:v0.4.1",
+            "name": "base-3.11:v0.4.1",
+            "tag": "v0.4.1",
+            "types": ["headless"]},
         ]
 
         result = await metadata_service.get_all_image_metadata('type_1')
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with('type_1')
+        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with({"types": 'type_1'})
 
     async def test_get_metadata_by_image_id(self, metadata_service):
-        image_id = '1'
-        expected_metadata = ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.2', name='base-3.11',
-                                          author_name='majorb', types=[],
-                                          digest='sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076',
-                                          tag='v0.4.2')
+        image_id = 'images.canfar.net/canfar/base-3.11:v0.4.1'
+        expected_metadata = ImageMetadata(image_id='images.canfar.net/canfar/base-3.11:v0.4.1', name='base-3.11:v0.4.1',
+                                          author_name='majorb',
+                                          types=["headless"],
+                                          digest='sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8',
+                                          tag='v0.4.1')
 
-        metadata_service.mongo_repository.get_image_metadata_by_location.return_value = {
-            "_id": {
-                "$oid": "67dab12a88a5719a80afa262"
-            },
-            "executable": {
-                "location": ["images.canfar.net/canfar/base-3.11:v0.4.2"],
-                "name": "base-3.11",
-                "type": "docker-container",
-                "digest": "sha256:04849f1bd0ac61427745fd6f9c2bf0a9fb3d2fc91335bd0385992210d4bb8076",
-            },
-            "metadata": {
-                "description": "This is a  base-3.11 image",
-                "version": "v0.4.2",
-                "tag": "v0.4.2",
-                "authorName": "majorb",
-
-                "specifications": []
-            },
-            "resources": {
-                "cores": {
-                    "min": 5,
-                    "max": 15
-                },
-                "memory": {
-                    "min": 3,
-                    "max": 9
-                }
-            }
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.return_value = {
+            "_id": {"$oid": "67f4f834d73d83fdccf87e5c"},
+            "author_name": "majorb",
+            "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
+            "image_id": "images.canfar.net/canfar/base-3.11:v0.4.1",
+            "name": "base-3.11:v0.4.1",
+            "tag": "v0.4.1",
+            "types": ["headless"]
         }
 
         result = await metadata_service.get_image_metadata_by_image_location(image_id)
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_image_metadata_by_location.assert_called_once_with(image_id)
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
 
     async def test_get_metadata_by_image_id_not_found(self, metadata_service):
         image_id = 'non_existent_id'
 
-        metadata_service.mongo_repository.get_image_metadata_by_location.return_value = None
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.return_value = None
 
         with pytest.raises(HTTPException) as exc_info:
             await metadata_service.get_image_metadata_by_image_location(image_id)
 
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == f"Image with id {image_id} not found"
-        metadata_service.mongo_repository.get_image_metadata_by_location.assert_called_once_with(image_id)
+        metadata_service.mongo_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
 
     async def test_register_metadata(self, metadata_service):
         image_url = 'images.canfar.net/canfar/base-3.11:v0.4.2'
@@ -212,8 +153,7 @@ class TestMetadataService:
         assert result == image_metadata
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
-        metadata_service.mongo_repository.add_software_metadata.assert_called_once_with("docker-container",
-                                                                                        software_metadata)
+        metadata_service.mongo_repository.register_image_metadata.assert_called_once_with(image_metadata)
 
     async def test_register_metadata_no_annotation_key(self, metadata_service):
         image_url = 'image_url'

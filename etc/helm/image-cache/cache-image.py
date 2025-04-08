@@ -80,6 +80,7 @@ for harbor_host in harbor_hosts:
                     'types': labels,
                     'digest': artifact['digest'],
                     'author_name': author_name,
+                    'name': f"{name}:{tag}",
                 }
 
                 collection.update_one(

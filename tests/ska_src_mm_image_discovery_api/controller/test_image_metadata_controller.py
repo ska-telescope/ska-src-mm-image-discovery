@@ -90,7 +90,7 @@ class TestImageMetadataController:
 
     async def test_get_image_metadata_by_image_location_when_metadata_not_found(self, metadata_controller):
         metadata_controller.metadata_service.get_image_metadata_by_image_location.side_effect = HTTPException(status_code=404,
-                                                                                           detail="Image metadata not found for image image_url")
+                                                                                                              detail="Image metadata not found for image image_url")
 
         query_params = {'image_id': 'images.canfar.net/canfar/3.12:v0.1.1'}
         with pytest.raises(HTTPException) as exc_info:

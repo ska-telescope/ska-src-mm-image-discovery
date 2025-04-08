@@ -91,7 +91,7 @@ class TestMongoRepository:
         assert status == "DOWN"
         async_mongo_client.server_info.assert_called_once()
 
-    async def test_get_all_metadata(self, mongo_repository, async_mongo_client, mongo_collection):
+    async def test_get_all_image_metadata(self, mongo_repository, async_mongo_client, mongo_collection):
         find_result = Mock()
         mongo_collection.find.return_value = find_result
         find_result.to_list = AsyncMock(return_value=[{'image_id': '5', 'type_name': 'test'}])
@@ -99,10 +99,10 @@ class TestMongoRepository:
         result = await mongo_repository.get_all_image_metadata({})
 
         assert result == [{'image_id': '5', 'type_name': 'test'}]
-        mongo_collection.find.assert_called_once_with({'metadata.specifications': {}})
+        mongo_collection.find.assert_called_once_with({})
         mongo_collection.find().to_list.assert_called_once_with(length=None)
 
-    async def test_get_all_metadata_with_type(self, mongo_repository, async_mongo_client, mongo_collection):
+    async def test_get_all_image_metadata_with_type(self, mongo_repository, async_mongo_client, mongo_collection):
         find_result = Mock()
         mongo_collection.find.return_value = find_result
         find_result.to_list = AsyncMock(return_value=[{'image_id': '5', 'type_name': 'test'}])
@@ -110,17 +110,17 @@ class TestMongoRepository:
         result = await mongo_repository.get_all_image_metadata({'type_name': 'test'})
 
         assert result == [{'image_id': '5', 'type_name': 'test'}]
-        mongo_collection.find.assert_called_once_with({'metadata.specifications': {'type_name': 'test'}})
+        mongo_collection.find.assert_called_once_with( {'type_name': 'test'})
         mongo_collection.find().to_list.assert_called_once_with(length=None)
 
-    async def test_get_metadata_by_location_success(self, mongo_repository, async_mongo_client, mongo_collection):
-        mongo_collection.find_one.return_value = {'image_id': '6', 'type_name': 'test'}
-        image_id = '6'
+    async def test_get_metadata_by_image_id_success(self, mongo_repository, async_mongo_client, mongo_collection):
+        mongo_collection.find_one.return_value = {'image_id': 'canfar:latest', 'type_name': 'test'}
+        image_id = 'canfar:latest'
 
-        result = await mongo_repository.get_image_metadata_by_location(image_id)
+        result = await mongo_repository.get_image_metadata_by_image_id(image_id)
 
-        assert result == {'image_id': '6', 'type_name': 'test'}
-        mongo_collection.find_one.assert_called_once_with({'executable.location': '6'})
+        assert result == {'image_id': 'canfar:latest', 'type_name': 'test'}
+        mongo_collection.find_one.assert_called_once_with({'image_id': 'canfar:latest'})
 
 
     async def test_add_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection , software_metadata):
