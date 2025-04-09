@@ -1,13 +1,14 @@
 import logging
 
 from fastapi import HTTPException
+from pydantic import BaseModel
 from pymongo import AsyncMongoClient
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
-from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.decorators.db_exceptions import handle_db_exceptions
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
+from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata
 
 
@@ -32,6 +33,37 @@ class MongoRepository:
     async def connection_status(self) -> str:
         server_info = await self.client.server_info()
         return "UP" if server_info.get("ok") == 1 else "DOWN"
+
+    @handle_db_exceptions
+    async def find(self, collection_name: str, metadata_filter: dict) -> list:
+        self.logger.info(metadata_filter)
+        collection = await self.get_collection(collection_name)
+        documents = await collection.find(metadata_filter).to_list(length=None)
+        if not documents:
+            self.logger.warning(f"No documents found for filter: {metadata_filter}")
+        return documents
+
+    @handle_db_exceptions
+    async def find_one(self, collection_name, metadata_filter: dict) -> dict:
+        self.logger.info(metadata_filter)
+        collection = await self.get_collection(collection_name)
+        document = await collection.find_one(metadata_filter)
+        if not document:
+            self.logger.warning(f"No document found for filter: {metadata_filter}")
+        return document
+
+    @handle_db_exceptions
+    async def update_one(self, collection_name, metadata_filter: dict, data: BaseModel) -> bool:
+        self.logger.info(metadata_filter)
+        collection = await self.get_collection(collection_name)
+        updated_document = await collection.update_one(
+            metadata_filter,
+            {"$set": data.__dict__},
+            upsert=True
+        )
+        if not updated_document:
+            self.logger.warning(f"No document found for filter: {metadata_filter}")
+        return updated_document.acknowledged
 
     @handle_db_exceptions
     async def get_all_image_metadata(self, metadata_filter: dict) -> list:
@@ -80,5 +112,3 @@ class MongoRepository:
         criteria = {'executable.name': software_name} if software_name is not None else {}
         metadata_list = await collection.find(criteria).to_list(length=None)
         return metadata_list
-
-

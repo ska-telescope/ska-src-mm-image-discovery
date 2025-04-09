@@ -2,8 +2,8 @@
 
 from fastapi import Depends
 from pymongo import AsyncMongoClient
-from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
 
+from src.ska_src_mm_image_discovery_api.repository.image_metadata_repository import ImageMetadataRepository
 from src.ska_src_mm_image_discovery_api.client.config_client import ConfigClient
 from src.ska_src_mm_image_discovery_api.client.mongo_client import MongoClient
 from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
@@ -12,10 +12,10 @@ from src.ska_src_mm_image_discovery_api.config.oci_config import OciConfig
 from src.ska_src_mm_image_discovery_api.controller.health_check_controller import HealthCheckController
 from src.ska_src_mm_image_discovery_api.controller.image_metadata_controller import ImageMetadataController
 from src.ska_src_mm_image_discovery_api.controller.software_discovery_controller import SoftwareDiscoveryController
+from src.ska_src_mm_image_discovery_api.decorators.db_exceptions import handle_db_exceptions
 from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 from src.ska_src_mm_image_discovery_api.service.image_metadata_service import ImageMetadataService
 from src.ska_src_mm_image_discovery_api.service.software_discovery_service import SoftwareDiscoveryService
-from src.ska_src_mm_image_discovery_api.decorators.db_exceptions import handle_db_exceptions
 
 
 # return a bean of ConfigClient
@@ -58,6 +58,12 @@ async def get_mongo_repository(
     return MongoRepository(mongo_config, mongo_client)
 
 
+@handle_db_exceptions
+async def get_image_metadata_repository(
+        mongo_repository: MongoRepository = Depends(get_mongo_repository)) -> ImageMetadataRepository:
+    return ImageMetadataRepository(mongo_repository)
+
+
 # return a bean of Skopeo
 def get_skopeo() -> Skopeo:
     return Skopeo()
@@ -66,10 +72,10 @@ def get_skopeo() -> Skopeo:
 # return a bean of MetadataService
 def get_metadata_service(
         oci_config: OciConfig = Depends(get_oci_config),
-        mongo_repository: MongoRepository = Depends(get_mongo_repository),
+        image_metadata_repository: ImageMetadataRepository = Depends(get_image_metadata_repository),
         skopeo: Skopeo = Depends(get_skopeo)
 ) -> ImageMetadataService:
-    return ImageMetadataService(oci_config, mongo_repository, skopeo)
+    return ImageMetadataService(oci_config, image_metadata_repository, skopeo)
 
 
 # return a bean of MetadataController

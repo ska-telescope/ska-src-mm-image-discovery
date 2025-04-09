@@ -4,27 +4,26 @@ import logging
 
 from fastapi import HTTPException
 
+from src.ska_src_mm_image_discovery_api.repository.image_metadata_repository import ImageMetadataRepository
 from src.ska_src_mm_image_discovery_api.common.skopeo import Skopeo
 from src.ska_src_mm_image_discovery_api.config.oci_config import OciConfig
 from src.ska_src_mm_image_discovery_api.decorators.singleton import singleton
 from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
-from src.ska_src_mm_image_discovery_api.repository.mongo_repository import MongoRepository
 
 
 @singleton
 class ImageMetadataService:
     logger = logging.getLogger("uvicorn")
 
-    def __init__(self, oci_labels_config: OciConfig, mongo_repository: MongoRepository, skopeo: Skopeo):
+    def __init__(self, oci_labels_config: OciConfig, image_metadata_repository: ImageMetadataRepository, skopeo: Skopeo):
         self.oci_labels_config = oci_labels_config
-        self.mongo_repository = mongo_repository
+        self.image_metadata_repository = image_metadata_repository
         self.skopeo = skopeo
 
     async def get_all_image_metadata(self, type_name: str | None) -> list[ImageMetadata]:
-        metadata_filter = {"types": type_name} if type_name else {}
         image_metadata_list = []
 
-        documents = await self.mongo_repository.get_all_image_metadata(metadata_filter)
+        documents = await self.image_metadata_repository.get_all_image_metadata(type_name)
         for metadata in documents:
             image_metadata = ImageMetadata(**metadata)
             image_metadata_list.append(image_metadata)
@@ -32,7 +31,7 @@ class ImageMetadataService:
         return image_metadata_list
 
     async def get_image_metadata_by_image_location(self, image_id: str) -> ImageMetadata:
-        metadata = await self.mongo_repository.get_image_metadata_by_image_id(image_id)
+        metadata = await self.image_metadata_repository.get_image_metadata_by_image_id(image_id)
         if metadata is None:
             self.logger.error(f"Image with id {image_id} not found")
             raise HTTPException(status_code=404, detail=f"Image with id {image_id} not found")
@@ -62,7 +61,7 @@ class ImageMetadataService:
             tag=metadata.get("Version")
         )
 
-        await self.mongo_repository.register_image_metadata(image_metadata)
+        await self.image_metadata_repository.register_metadata(image_metadata)
         return image_metadata
 
     @staticmethod

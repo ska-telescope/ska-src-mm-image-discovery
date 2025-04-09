@@ -44,7 +44,7 @@ class TestMetadataService:
                           tag='v0.4.1'),
         ]
 
-        metadata_service.mongo_repository.get_all_image_metadata.return_value = [{
+        metadata_service.image_metadata_repository.get_all_image_metadata.return_value = [{
             "_id": {"$oid": "67f4f834d73d83fdccf87e5c"},
             "author_name": "majorb",
             "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
@@ -57,7 +57,7 @@ class TestMetadataService:
         result = await metadata_service.get_all_image_metadata("type_1")
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with({"types": "type_1"})
+        metadata_service.image_metadata_repository.get_all_image_metadata.assert_called_once_with("type_1")
 
     async def test_get_all_metadata_by_type(self, metadata_service):
         expected_metadata = [
@@ -68,7 +68,7 @@ class TestMetadataService:
                           tag='v0.4.1'),
         ]
 
-        metadata_service.mongo_repository.get_all_image_metadata.return_value = [{
+        metadata_service.image_metadata_repository.get_all_image_metadata.return_value = [{
             "_id": {"$oid": "67f4f834d73d83fdccf87e5c"},
             "author_name": "majorb",
             "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
@@ -81,7 +81,7 @@ class TestMetadataService:
         result = await metadata_service.get_all_image_metadata('type_1')
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_all_image_metadata.assert_called_once_with({"types": 'type_1'})
+        metadata_service.image_metadata_repository.get_all_image_metadata.assert_called_once_with('type_1')
 
     async def test_get_metadata_by_image_id(self, metadata_service):
         image_id = 'images.canfar.net/canfar/base-3.11:v0.4.1'
@@ -91,7 +91,7 @@ class TestMetadataService:
                                           digest='sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8',
                                           tag='v0.4.1')
 
-        metadata_service.mongo_repository.get_image_metadata_by_image_id.return_value = {
+        metadata_service.image_metadata_repository.get_image_metadata_by_image_id.return_value = {
             "_id": {"$oid": "67f4f834d73d83fdccf87e5c"},
             "author_name": "majorb",
             "digest": "sha256:d3a1bfad817a2208752e1722c67dcbfad9510f0b4fd21f529af75bd8fb3b0ac8",
@@ -104,19 +104,19 @@ class TestMetadataService:
         result = await metadata_service.get_image_metadata_by_image_location(image_id)
 
         assert result == expected_metadata
-        metadata_service.mongo_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
+        metadata_service.image_metadata_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
 
     async def test_get_metadata_by_image_id_not_found(self, metadata_service):
         image_id = 'non_existent_id'
 
-        metadata_service.mongo_repository.get_image_metadata_by_image_id.return_value = None
+        metadata_service.image_metadata_repository.get_image_metadata_by_image_id.return_value = None
 
         with pytest.raises(HTTPException) as exc_info:
             await metadata_service.get_image_metadata_by_image_location(image_id)
 
         assert exc_info.value.status_code == 404
         assert exc_info.value.detail == f"Image with id {image_id} not found"
-        metadata_service.mongo_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
+        metadata_service.image_metadata_repository.get_image_metadata_by_image_id.assert_called_once_with(image_id)
 
     async def test_register_metadata(self, metadata_service):
         image_url = 'images.canfar.net/canfar/base-3.11:v0.4.2'
@@ -134,12 +134,6 @@ class TestMetadataService:
             'Digest': 'digest'
         }
 
-        software_metadata = SoftwareMetadata(
-            executable=Executable(name='name-1', type='docker-container', location=[image_url], digest='digest', ),
-            metadata=Metadata(description='This is a docker container with name name-1', version='v0.4.2', tag='v0.4.2',
-                              authorName='author_name', specifications=['type_1', 'type_2']),
-            resources=Resources(cores=ResourceLimit(min=5, max=15), memory=ResourceLimit(min=3, max=9)), )
-
         image_metadata = ImageMetadata(image_id=image_url,
                                        name='name-1',
                                        author_name='author_name',
@@ -147,13 +141,13 @@ class TestMetadataService:
                                        digest='digest',
                                        tag='v0.4.2')
 
-        metadata_service.mongo_repository.add_software_metadata.return_value = image_metadata
+        metadata_service.image_metadata_repository.add_software_metadata.return_value = image_metadata
         result = await metadata_service.register_metadata(image_url)
 
         assert result == image_metadata
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
-        metadata_service.mongo_repository.register_image_metadata.assert_called_once_with(image_metadata)
+        metadata_service.image_metadata_repository.register_metadata.assert_called_once_with(image_metadata)
 
     async def test_register_metadata_no_annotation_key(self, metadata_service):
         image_url = 'image_url'
@@ -167,7 +161,7 @@ class TestMetadataService:
         assert exc_info.value.detail == 'annotations not found for the image'
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
-        metadata_service.mongo_repository.register_image_metadata.assert_not_called()
+        metadata_service.image_metadata_repository.register_image_metadata.assert_not_called()
 
     async def test_register_metadata_no_metadata_key(self, metadata_service):
         image_url = 'image_url'
@@ -183,7 +177,7 @@ class TestMetadataService:
         assert exc_info.value.detail == 'metadata not found for the image'
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
-        metadata_service.mongo_repository.register_image_metadata.assert_not_called()
+        metadata_service.image_metadata_repository.register_image_metadata.assert_not_called()
 
     async def test_register_metadata_skopeo_inspect_failure(self, metadata_service):
         image_url = 'image_url'
@@ -198,7 +192,7 @@ class TestMetadataService:
         assert exc_info.value.detail == "Error while fetching metadata"
 
         metadata_service.skopeo.inspect.assert_called_once_with(image_url)
-        metadata_service.mongo_repository.register_image_metadata.assert_not_called()
+        metadata_service.image_metadata_repository.register_image_metadata.assert_not_called()
 
     async def test_inspect_image_metadata(self, metadata_service):
         image_url = 'image_url'
