@@ -8,6 +8,7 @@ from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.asynchronous.database import AsyncDatabase
 from pymongo.errors import ConnectionFailure
 
+from src.ska_src_mm_image_discovery_api.models.image_metadata import ImageMetadata
 from src.ska_src_mm_image_discovery_api.config.mongo_config import MongoConfig
 from src.ska_src_mm_image_discovery_api.models.software_metadata import SoftwareMetadata, ResourceLimit, Resources, \
     Metadata, Executable
@@ -91,39 +92,8 @@ class TestMongoRepository:
         assert status == "DOWN"
         async_mongo_client.server_info.assert_called_once()
 
-    async def test_get_all_image_metadata(self, mongo_repository, async_mongo_client, mongo_collection):
-        find_result = Mock()
-        mongo_collection.find.return_value = find_result
-        find_result.to_list = AsyncMock(return_value=[{'image_id': '5', 'type_name': 'test'}])
-
-        result = await mongo_repository.get_all_image_metadata({})
-
-        assert result == [{'image_id': '5', 'type_name': 'test'}]
-        mongo_collection.find.assert_called_once_with({})
-        mongo_collection.find().to_list.assert_called_once_with(length=None)
-
-    async def test_get_all_image_metadata_with_type(self, mongo_repository, async_mongo_client, mongo_collection):
-        find_result = Mock()
-        mongo_collection.find.return_value = find_result
-        find_result.to_list = AsyncMock(return_value=[{'image_id': '5', 'type_name': 'test'}])
-
-        result = await mongo_repository.get_all_image_metadata({'type_name': 'test'})
-
-        assert result == [{'image_id': '5', 'type_name': 'test'}]
-        mongo_collection.find.assert_called_once_with( {'type_name': 'test'})
-        mongo_collection.find().to_list.assert_called_once_with(length=None)
-
-    async def test_get_metadata_by_image_id_success(self, mongo_repository, async_mongo_client, mongo_collection):
-        mongo_collection.find_one.return_value = {'image_id': 'canfar:latest', 'type_name': 'test'}
-        image_id = 'canfar:latest'
-
-        result = await mongo_repository.get_image_metadata_by_image_id(image_id)
-
-        assert result == {'image_id': 'canfar:latest', 'type_name': 'test'}
-        mongo_collection.find_one.assert_called_once_with({'image_id': 'canfar:latest'})
-
-
-    async def test_add_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection , software_metadata):
+    async def test_add_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection,
+                                         software_metadata):
         saved_metadata = await mongo_repository.add_software_metadata('docker-container', software_metadata)
 
         mongo_collection.update_one.assert_called_once_with({'executable.location': {'$in': ['location']}},
@@ -131,7 +101,8 @@ class TestMongoRepository:
                                                             upsert=True)
         assert saved_metadata == software_metadata
 
-    async def test_get_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection , software_metadata):
+    async def test_get_software_metadata(self, mongo_repository, async_mongo_client, mongo_collection,
+                                         software_metadata):
         find_result = Mock()
         mongo_collection.find.return_value = find_result
         find_result.to_list = AsyncMock(return_value=[software_metadata])
@@ -142,7 +113,8 @@ class TestMongoRepository:
         mongo_collection.find.assert_called_once_with({'executable.name': 'name'})
         mongo_collection.find().to_list.assert_called_once_with(length=None)
 
-    async def test_get_software_metadata_without_name(self, mongo_repository, async_mongo_client, mongo_collection , software_metadata):
+    async def test_get_software_metadata_without_name(self, mongo_repository, async_mongo_client, mongo_collection,
+                                                      software_metadata):
         find_result = Mock()
         mongo_collection.find.return_value = find_result
         find_result.to_list = AsyncMock(return_value=[software_metadata])
@@ -152,3 +124,71 @@ class TestMongoRepository:
         assert metadata_list == [software_metadata]
         mongo_collection.find.assert_called_once_with({})
         mongo_collection.find().to_list.assert_called_once_with(length=None)
+
+    async def test_find_one(self, mongo_repository, async_mongo_client, mongo_collection):
+        find_result = Mock()
+        mongo_collection.find_one.return_value = find_result
+
+        result = await mongo_repository.find_one('collection_name', {"filter": 'metadata_filter'})
+
+        assert result == find_result
+        mongo_collection.find_one.assert_called_once_with({"filter": 'metadata_filter'})
+
+    async def test_find_one_failure(self, mongo_repository, async_mongo_client, mongo_collection):
+        mongo_collection.find_one.side_effect = Exception("Test error")
+
+        with pytest.raises(Exception) as exc_info:
+            await mongo_repository.find_one('collection_name', {"filter": 'metadata_filter'})
+
+        assert str(exc_info.value) == "Test error"
+        mongo_collection.find_one.assert_called_once_with({"filter": 'metadata_filter'})
+
+    async def test_find(self, mongo_repository, async_mongo_client, mongo_collection):
+        find_result = Mock()
+        mongo_collection.find.return_value = find_result
+        find_result.to_list = AsyncMock(return_value=[{'image_id': '5', 'type_name': 'test'}])
+
+        result = await mongo_repository.find('collection_name', {'filter': 'metadata_filter'})
+
+        assert result == [{'image_id': '5', 'type_name': 'test'}]
+        mongo_collection.find.assert_called_once_with({'filter': 'metadata_filter'})
+        mongo_collection.find().to_list.assert_called_once_with(length=None)
+
+    async def test_find_failure(self, mongo_repository, async_mongo_client, mongo_collection):
+        mongo_collection.find.side_effect = Exception("Test error")
+
+        with pytest.raises(Exception) as exc_info:
+            await mongo_repository.find('collection_name', {'filter': 'metadata_filter'})
+
+        assert str(exc_info.value) == "Test error"
+        mongo_collection.find.assert_called_once_with({'filter': 'metadata_filter'})
+
+    async def test_update_one(self, mongo_repository, async_mongo_client, mongo_collection):
+        await mongo_repository.update_one('collection_name', {'filter': 'metadata_filter'},
+                                          ImageMetadata(image_id="image_url",
+                                                        name='name-1',
+                                                        author_name='author_name',
+                                                        types=['type_1', 'type_2'],
+                                                        digest='digest',
+                                                        tag='v0.4.2'))
+
+        mongo_collection.update_one.assert_called_once_with({'filter': 'metadata_filter'}, {
+            '$set': {'image_id': 'image_url', 'name': 'name-1', 'author_name': 'author_name',
+                     'types': ['type_1', 'type_2'], 'digest': 'digest', 'tag': 'v0.4.2'}}, upsert=True)
+
+    async def test_update_one_failure(self, mongo_repository, async_mongo_client, mongo_collection):
+        mongo_collection.update_one.side_effect = Exception("Test error")
+
+        with pytest.raises(Exception) as exc_info:
+            await mongo_repository.update_one('collection_name', {'filter': 'metadata_filter'},
+                                              ImageMetadata(image_id="image_url",
+                                                            name='name-1',
+                                                            author_name='author_name',
+                                                            types=['type_1', 'type_2'],
+                                                            digest='digest',
+                                                            tag='v0.4.2'))
+
+        assert str(exc_info.value) == "Test error"
+        mongo_collection.update_one.assert_called_once_with({'filter': 'metadata_filter'}, {
+            '$set': {'image_id': 'image_url', 'name': 'name-1', 'author_name': 'author_name',
+                     'types': ['type_1', 'type_2'], 'digest': 'digest', 'tag': 'v0.4.2'}}, upsert=True)

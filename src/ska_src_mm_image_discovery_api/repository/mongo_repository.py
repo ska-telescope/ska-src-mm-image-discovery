@@ -66,31 +66,6 @@ class MongoRepository:
         return updated_document.acknowledged
 
     @handle_db_exceptions
-    async def get_all_image_metadata(self, metadata_filter: dict) -> list:
-        collection = await self.get_collection("canfar-images")
-        self.logger.info(metadata_filter)
-        metadata_list = await collection.find(metadata_filter).to_list(length=None)
-        if not metadata_list:
-            self.logger.warning(f"No metadata found for filter: {metadata_filter}")
-        return metadata_list
-
-    @handle_db_exceptions
-    async def get_image_metadata_by_image_id(self, image_id: str) -> dict:
-        collection = await self.get_collection("canfar-images")
-        return await collection.find_one({'image_id': image_id})
-
-    @handle_db_exceptions
-    async def register_image_metadata(self, image_metadata: ImageMetadata) -> ImageMetadata:
-        collection = await self.get_collection("canfar-images")
-        updated_metadata = await collection.update_one(
-            {'image_id': image_metadata.image_id},
-            {'$set': image_metadata.__dict__},
-            upsert=True
-        )
-        self.logger.info(f"Updated metadata for image {image_metadata.image_id} is {updated_metadata}")
-        return image_metadata
-
-    @handle_db_exceptions
     async def add_software_metadata(self, software_type: str, software_metadata: SoftwareMetadata) -> SoftwareMetadata:
         collection = await self.get_collection(software_type)
         await collection.update_one(
