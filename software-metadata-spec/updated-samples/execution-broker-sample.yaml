@@ -1,0 +1,658 @@
+MessageItem:
+  type: "https://example.com/message-type"
+  time: "2025-04-09T12:34:56Z"
+  level: "INFO"
+  template: "User {username} has logged in."
+  values:
+    username: "johndoe"
+    ipAddress: "192.168.1.1"
+  message: "User johndoe has logged in."
+
+
+AbstractComponent:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleComponent"
+  type: "example-type"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Component {componentName} has been created."
+      values:
+        componentName: "ExampleComponent"
+      message: "Component ExampleComponent has been created."
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:35:00Z"
+      level: "WARN"
+      template: "Component {componentName} encountered a warning."
+      values:
+        componentName: "ExampleComponent"
+      message: "Component ExampleComponent encountered a warning."
+
+
+ExecutableAccessMethod:
+  status: "ACTIVE"
+  protocol: "HTTPS"
+  locations:
+    - "https://192.168.1.1:8080"
+    - "https://example.com/execution"
+
+ExecutableAccessList:
+  - status: "PREPARING"
+    protocol: "HTTP"
+    locations:
+      - "http://192.168.1.1:8080"
+      - "http://example.com/execution"
+  - status: "ACTIVE"
+    protocol: "HTTPS"
+    locations:
+      - "https://192.168.1.1:8443"
+      - "https://example.com/execution"
+  - status: "FINISHED"
+    protocol: "TCP"
+    locations:
+      - "tcp://192.168.1.1:9000"
+
+
+
+AbstractExecutable:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleDockerContainer"
+  type: "https://www.purl.org/ivoa.net/EB/schema/types/executables/docker-container-1.0"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Executable {name} has been created."
+      values:
+        name: "ExampleDockerContainer"
+      message: "Executable ExampleDockerContainer has been created."
+  access:
+    - status: "PREPARING"
+      protocol: "HTTP"
+      locations:
+        - "http://192.168.1.1:8080"
+        - "http://example.com/execution"
+    - status: "ACTIVE"
+      protocol: "HTTPS"
+      locations:
+        - "https://192.168.1.1:8443"
+        - "https://example.com/execution"
+
+
+---
+DockerInternalPort:
+  port: 8080
+
+DockerExternalPort:
+  port: 8080
+  addresses:
+    - "192.168.1.1"
+    - "example.com"
+    - "2001:db8::1"  # IPv6 address
+
+DockerNetworkPort:
+  access: true
+  internal:
+    port: 8080
+  external:
+    port: 80
+    addresses:
+      - "192.168.1.1"
+      - "example.com"
+      - "2001:db8::1"  # IPv6 address
+  protocol: "HTTPS"
+  path: "/notebooks/example.ipynb"
+---
+DockerPlatformSpec:
+  architecture: "arm64"
+  os: "linux"
+
+DockerImageSpec:
+  locations:
+    - "ghcr.io/ivoa/oligia-webtop:ubuntu-2022.01.13"
+    - "docker.io/library/nginx:latest"
+  digest: "sha256:3d2e482f2e3e4f8b9c8a9e5f8e2d3c4b5a6f7e8d9c0a1b2c3d4e5f6a7b8c9d0"
+  platform:
+    architecture: "amd64"
+    os: "linux"
+---
+DockerContainerSpec:
+  image:
+    locations:
+      - "ghcr.io/ivoa/oligia-webtop:ubuntu-2022.01.13"
+      - "docker.io/library/nginx:latest"
+    digest: "sha256:3d2e482f2e3e4f8b9c8a9e5f8e2d3c4b5a6f7e8d9c0a1b2c3d4e5f6a7b8c9d0"
+    platform:
+      architecture: "amd64"
+      os: "linux"
+  privileged: true
+  entrypoint: "/bin/bash"
+  environment:
+    VAR1: "value1"
+    VAR2: "value2"
+  network:
+    ports:
+      - access: true
+        internal:
+          port: 8080
+        external:
+          port: 80
+          addresses:
+            - "192.168.1.1"
+            - "example.com"
+        protocol: "HTTP"
+        path: "/api"
+---
+DockerContainer:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleDockerContainer"
+  type: "https://www.purl.org/ivoa.net/EB/schema/types/executables/docker-container-1.0"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Container {name} has been created."
+      values:
+        name: "ExampleDockerContainer"
+      message: "Container ExampleDockerContainer has been created."
+  access:
+    - status: "ACTIVE"
+      protocol: "HTTPS"
+      locations:
+        - "https://192.168.1.1:8443"
+        - "https://example.com/container"
+  image:
+    locations:
+      - "ghcr.io/ivoa/oligia-webtop:ubuntu-2022.01.13"
+      - "docker.io/library/nginx:latest"
+    digest: "sha256:3d2e482f2e3e4f8b9c8a9e5f8e2d3c4b5a6f7e8d9c0a1b2c3d4e5f6a7b8c9d0"
+    platform:
+      architecture: "amd64"
+      os: "linux"
+  privileged: false
+  entrypoint: "/bin/bash"
+  environment:
+    VAR1: "value1"
+    VAR2: "value2"
+  network:
+    ports:
+      - access: true
+        internal:
+          port: 8080
+        external:
+          port: 80
+          addresses:
+            - "192.168.1.1"
+            - "example.com"
+        protocol: "HTTP"
+        path: "/api"
+
+---
+JupyterNotebookSpec:
+  location: "https://example.com/notebooks/data-analysis.ipynb"
+
+
+JupyterNotebook:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleJupyterNotebook"
+  type: "https://www.purl.org/ivoa.net/EB/schema/types/executables/jupyter-notebook-1.0"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Notebook {name} has been created."
+      values:
+        name: "ExampleJupyterNotebook"
+      message: "Notebook ExampleJupyterNotebook has been created."
+  access:
+    - status: "ACTIVE"
+      protocol: "HTTPS"
+      locations:
+        - "https://192.168.1.1:8443"
+        - "https://example.com/notebook"
+  location: "https://example.com/notebooks/data-analysis.ipynb"
+
+---
+SingularityContainerSpec:
+  location: "https://example.com/containers/singularity-image.sif"
+
+SingularityContainerExample:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleSingularityContainer"
+  type: "https://www.purl.org/ivoa.net/EB/schema/types/executables/singularity-container-1.0"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Container {name} has been created."
+      values:
+        name: "ExampleSingularityContainer"
+      message: "Container ExampleSingularityContainer has been created."
+  access:
+    - status: "ACTIVE"
+      protocol: "HTTPS"
+      locations:
+        - "https://192.168.1.1:8443"
+        - "https://example.com/container"
+  location: "https://example.com/containers/singularity-image.sif"
+
+---
+AbstractComponent:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleComponent"
+  type: "example-type"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Component {componentName} has been created."
+      values:
+        componentName: "ExampleComponent"
+      message: "Component ExampleComponent has been created."
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:35:00Z"
+      level: "WARN"
+      template: "Component {componentName} encountered a warning."
+      values:
+        componentName: "ExampleComponent"
+      message: "Component ExampleComponent encountered a warning."
+
+---
+SimpleComputeVolume:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleVolume"
+  type: "volume"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Volume {name} has been created."
+      values:
+        name: "ExampleVolume"
+      message: "Volume ExampleVolume has been created."
+  path: "/data"
+  mode: "READWRITE"
+  resource: "456e7890-e12b-34d5-a678-123456789abc"
+
+---
+SimpleComputeMemoryOffered:
+  min: 4
+  max: 16
+
+SimpleComputeMemoryRequested:
+  min: 8
+  max: 32
+
+SimpleComputeMemory:
+  requested:
+    min: 8
+    max: 32
+  offered:
+    min: 16
+    max: 64
+
+SimpleComputeCoresRequested:
+  min: 4
+  max: 16
+
+SimpleComputeCoresOffered:
+  min: 8
+  max: 32
+
+SimpleComputeCores:
+  requested:
+    min: 2
+    max: 8
+  offered:
+    min: 4
+    max: 16
+
+---
+SimpleComputeSpec-:
+  cores:
+    requested:
+      min: 2
+      max: 8
+    offered:
+      min: 4
+      max: 16
+  memory:
+    requested:
+      min: 8
+      max: 32
+    offered:
+      min: 16
+      max: 64
+  volumes:
+    - path: "/data"
+      mode: "READWRITE"
+      resource: "123e4567-e89b-12d3-a456-426614174000"
+    - path: "/logs"
+      mode: "READONLY"
+      resource: "456e7890-e12b-34d5-a678-123456789abc"
+
+SimpleComputeSpec:
+  cores:
+    requested:
+      min: 2
+      max: 8
+    offered:
+      min: 4
+      max: 16
+  memory:
+    requested:
+      min: 8
+      max: 32
+    offered:
+      min: 16
+      max: 64
+  volumes:
+    - uuid: "123e4567-e89b-12d3-a456-426614174000"
+      name: "DataVolume"
+      type: "volume"
+      created: "2025-04-09T12:34:56Z"
+      messages:
+        - type: "https://example.com/message-type"
+          time: "2025-04-09T12:34:56Z"
+          level: "INFO"
+          template: "Volume {name} has been created."
+          values:
+            name: "DataVolume"
+          message: "Volume DataVolume has been created."
+      path: "/data"
+      mode: "READWRITE"
+      resource: "456e7890-e12b-34d5-a678-123456789abc"
+    - uuid: "789e1234-e56b-78d9-a123-456789abcdef"
+      name: "LogsVolume"
+      type: "volume"
+      created: "2025-04-09T12:35:00Z"
+      messages:
+        - type: "https://example.com/message-type"
+          time: "2025-04-09T12:35:00Z"
+          level: "INFO"
+          template: "Volume {name} has been created."
+          values:
+            name: "LogsVolume"
+          message: "Volume LogsVolume has been created."
+      path: "/logs"
+      mode: "READONLY"
+      resource: "123e4567-e89b-12d3-a456-426614174001"
+---
+
+AbstractComputeResource:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleComputeResource"
+  type: "https://www.purl.org/ivoa.net/EB/schema/types/resources/compute/simple-compute-resource-1.0"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Compute resource {name} has been created."
+      values:
+        name: "ExampleComputeResource"
+      message: "Compute resource ExampleComputeResource has been created."
+
+
+SimpleComputeResource:
+  uuid: "123e4567-e89b-12d3-a456-426614174000"
+  name: "ExampleComputeResource"
+  type: "simple-compute-resource"
+  created: "2025-04-09T12:34:56Z"
+  messages:
+    - type: "https://example.com/message-type"
+      time: "2025-04-09T12:34:56Z"
+      level: "INFO"
+      template: "Compute resource {name} has been created."
+      values:
+        name: "ExampleComputeResource"
+      message: "Compute resource ExampleComputeResource has been created."
+  cores:
+    requested:
+      min: 2
+      max: 8
+    offered:
+      min: 4
+      max: 16
+  memory:
+    requested:
+      min: 8
+      max: 32
+    offered:
+      min: 16
+      max: 64
+  volumes:
+    - uuid: "456e7890-e12b-34d5-a678-123456789abc"
+      name: "DataVolume"
+      type: "volume"
+      created: "2025-04-09T12:35:00Z"
+      messages:
+        - type: "https://example.com/message-type"
+          time: "2025-04-09T12:35:00Z"
+          level: "INFO"
+          template: "Volume {name} has been created."
+          values:
+            name: "DataVolume"
+          message: "Volume DataVolume has been created."
+      path: "/data"
+      mode: "READWRITE"
+      resource: "789e1234-e56b-78d9-a123-456789abcdef"
+    - uuid: "789e1234-e56b-78d9-a123-456789abcdef"
+      name: "LogsVolume"
+      type: "volume"
+      created: "2025-04-09T12:36:00Z"
+      messages:
+        - type: "https://example.com/message-type"
+          time: "2025-04-09T12:36:00Z"
+          level: "INFO"
+          template: "Volume {name} has been created."
+          values:
+            name: "LogsVolume"
+          message: "Volume LogsVolume has been created."
+      path: "/logs"
+      mode: "READONLY"
+      resource: "123e4567-e89b-12d3-a456-426614174001"
+
+---
+
+ComputeResourceList-:
+  - uuid: "123e4567-e89b-12d3-a456-426614174000"
+    name: "ComputeResource1"
+    type: "https://www.purl.org/ivoa.net/EB/schema/types/resources/compute/simple-compute-resource-1.0"
+    created: "2025-04-09T12:34:56Z"
+    messages:
+      - type: "https://example.com/message-type"
+        time: "2025-04-09T12:34:56Z"
+        level: "INFO"
+        template: "Compute resource {name} has been created."
+        values:
+          name: "ComputeResource1"
+        message: "Compute resource ComputeResource1 has been created."
+  - uuid: "456e7890-e12b-34d5-a678-123456789abc"
+    name: "ComputeResource2"
+    type: "https://www.purl.org/ivoa.net/EB/schema/types/resources/compute/simple-compute-resource-1.0"
+    created: "2025-04-09T12:35:00Z"
+    messages:
+      - type: "https://example.com/message-type"
+        time: "2025-04-09T12:35:00Z"
+        level: "INFO"
+        template: "Compute resource {name} has been created."
+        values:
+          name: "ComputeResource2"
+        message: "Compute resource ComputeResource2 has been created."
+
+ComputeResourceList:
+  - uuid: "123e4567-e89b-12d3-a456-426614174000"
+    name: "ComputeResource1"
+    type: "simple-compute-resource"
+    created: "2025-04-09T12:34:56Z"
+    cores:
+      requested:
+        min: 2
+        max: 8
+      offered:
+        min: 4
+        max: 16
+    memory:
+      requested:
+        min: 8
+        max: 32
+      offered:
+        min: 16
+        max: 64
+    volumes:
+      - uuid: "456e7890-e12b-34d5-a678-123456789abc"
+        name: "DataVolume"
+        type: "volume"
+        created: "2025-04-09T12:35:00Z"
+        path: "/data"
+        mode: "READWRITE"
+        resource: "789e1234-e56b-78d9-a123-456789abcdef"
+      - uuid: "789e1234-e56b-78d9-a123-456789abcdef"
+        name: "LogsVolume"
+        type: "volume"
+        created: "2025-04-09T12:36:00Z"
+        path: "/logs"
+        mode: "READONLY"
+        resource: "123e4567-e89b-12d3-a456-426614174001"
+  - uuid: "456e7890-e12b-34d5-a678-123456789abc"
+    name: "ComputeResource2"
+    type: "simple-compute-resource"
+    created: "2025-04-09T12:40:00Z"
+    cores:
+      requested:
+        min: 4
+        max: 16
+      offered:
+        min: 8
+        max: 32
+    memory:
+      requested:
+        min: 16
+        max: 64
+      offered:
+        min: 32
+        max: 128
+    volumes:
+      - uuid: "123e4567-e89b-12d3-a456-426614174002"
+        name: "BackupVolume"
+        type: "volume"
+        created: "2025-04-09T12:45:00Z"
+        path: "/backup"
+        mode: "READWRITE"
+        resource: "456e7890-e12b-34d5-a678-123456789abc"
+
+---
+
+ExecutionResourceList:
+  compute:
+    - uuid: "123e4567-e89b-12d3-a456-426614174000"
+      name: "ComputeResource1"
+      type: "simple-compute-resource"
+      created: "2025-04-09T12:34:56Z"
+      cores:
+        requested:
+          min: 2
+          max: 8
+        offered:
+          min: 4
+          max: 16
+      memory:
+        requested:
+          min: 8
+          max: 32
+        offered:
+          min: 16
+          max: 64
+      volumes:
+        - uuid: "456e7890-e12b-34d5-a678-123456789abc"
+          name: "DataVolume"
+          type: "volume"
+          created: "2025-04-09T12:35:00Z"
+          path: "/data"
+          mode: "READWRITE"
+          resource: "789e1234-e56b-78d9-a123-456789abcdef"
+        - uuid: "789e1234-e56b-78d9-a123-456789abcdef"
+          name: "LogsVolume"
+          type: "volume"
+          created: "2025-04-09T12:36:00Z"
+          path: "/logs"
+          mode: "READONLY"
+          resource: "123e4567-e89b-12d3-a456-426614174001"
+    - uuid: "456e7890-e12b-34d5-a678-123456789abc"
+      name: "ComputeResource2"
+      type: "simple-compute-resource"
+      created: "2025-04-09T12:40:00Z"
+      cores:
+        requested:
+          min: 4
+          max: 16
+        offered:
+          min: 8
+          max: 32
+      memory:
+        requested:
+          min: 16
+          max: 64
+        offered:
+          min: 32
+          max: 128
+      volumes:
+        - uuid: "123e4567-e89b-12d3-a456-426614174002"
+          name: "BackupVolume"
+          type: "volume"
+          created: "2025-04-09T12:45:00Z"
+          path: "/backup"
+          mode: "READWRITE"
+          resource: "456e7890-e12b-34d5-a678-123456789abc"
+
+---
+
+OfferSetRequest-:
+  name: "Data Processing Request"
+  executable:
+    type: "https://www.purl.org/ivoa.net/EB/schema/types/executables/docker-container-1.0"
+    uuid: "123e4567-e89b-12d3-a456-426614174000"
+    name: "DataProcessor"
+    created: "2025-04-09T12:34:56Z"
+    access:
+      - status: "ACTIVE"
+        protocol: "HTTPS"
+        locations:
+          - "https://example.com/container"
+  resources:
+    compute:
+      - uuid: "456e7890-e12b-34d5-a678-123456789abc"
+        name: "ComputeResource1"
+        type: "simple-compute-resource"
+        created: "2025-04-09T12:35:00Z"
+        cores:
+          requested:
+            min: 4
+            max: 16
+          offered:
+            min: 8
+            max: 32
+        memory:
+          requested:
+            min: 16
+            max: 64
+          offered:
+            min: 32
+            max: 128
+        volumes:
+          - uuid: "789e1234-e56b-78d9-a123-456789abcdef"
+            name: "DataVolume"
+            type: "volume"
+            created: "2025-04-09T12:36:00Z"
+            path: "/data"
+            mode: "READWRITE"
+            resource: "123e4567-e89b-12d3-a456-426614174001"
