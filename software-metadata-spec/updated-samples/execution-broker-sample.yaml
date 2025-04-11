@@ -1,3 +1,4 @@
+#done
 MessageItem:
   type: "https://example.com/message-type"
   time: "2025-04-09T12:34:56Z"
@@ -8,7 +9,7 @@ MessageItem:
     ipAddress: "192.168.1.1"
   message: "User johndoe has logged in."
 
-
+#done
 AbstractComponent:
   uuid: "123e4567-e89b-12d3-a456-426614174000"
   name: "ExampleComponent"
@@ -31,6 +32,7 @@ AbstractComponent:
       message: "Component ExampleComponent encountered a warning."
 
 
+#done
 ExecutableAccessMethod:
   status: "ACTIVE"
   protocol: "HTTPS"
@@ -38,21 +40,24 @@ ExecutableAccessMethod:
     - "https://192.168.1.1:8080"
     - "https://example.com/execution"
 
+
+#done
 ExecutableAccessList:
-  - status: "PREPARING"
-    protocol: "HTTP"
-    locations:
-      - "http://192.168.1.1:8080"
-      - "http://example.com/execution"
-  - status: "ACTIVE"
-    protocol: "HTTPS"
-    locations:
-      - "https://192.168.1.1:8443"
-      - "https://example.com/execution"
-  - status: "FINISHED"
-    protocol: "TCP"
-    locations:
-      - "tcp://192.168.1.1:9000"
+
+    - status: "PREPARING"
+      protocol: "HTTP"
+      locations:
+        - "http://192.168.1.1:8080"
+        - "http://example.com/execution"
+    - status: "ACTIVE"
+      protocol: "HTTPS"
+      locations:
+        - "https://192.168.1.1:8443"
+        - "https://example.com/execution"
+    - status: "FINISHED"
+      protocol: "TCP"
+      locations:
+        - "tcp://192.168.1.1:9000"
 
 
 
@@ -83,9 +88,11 @@ AbstractExecutable:
 
 
 ---
+#done
 DockerInternalPort:
   port: 8080
 
+#done
 DockerExternalPort:
   port: 8080
   addresses:
@@ -93,6 +100,7 @@ DockerExternalPort:
     - "example.com"
     - "2001:db8::1"  # IPv6 address
 
+#done
 DockerNetworkPort:
   access: true
   internal:
@@ -106,10 +114,12 @@ DockerNetworkPort:
   protocol: "HTTPS"
   path: "/notebooks/example.ipynb"
 ---
+#done
 DockerPlatformSpec:
   architecture: "arm64"
   os: "linux"
 
+#done
 DockerImageSpec:
   locations:
     - "ghcr.io/ivoa/oligia-webtop:ubuntu-2022.01.13"
@@ -119,6 +129,8 @@ DockerImageSpec:
     architecture: "amd64"
     os: "linux"
 ---
+
+#DONE
 DockerContainerSpec:
   image:
     locations:
@@ -146,6 +158,8 @@ DockerContainerSpec:
         protocol: "HTTP"
         path: "/api"
 ---
+
+#done
 DockerContainer:
   uuid: "123e4567-e89b-12d3-a456-426614174000"
   name: "ExampleDockerContainer"
@@ -192,10 +206,11 @@ DockerContainer:
         path: "/api"
 
 ---
+#done
 JupyterNotebookSpec:
   location: "https://example.com/notebooks/data-analysis.ipynb"
 
-
+#done
 JupyterNotebook:
   uuid: "123e4567-e89b-12d3-a456-426614174000"
   name: "ExampleJupyterNotebook"
