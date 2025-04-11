@@ -280,6 +280,7 @@ AbstractComponent:
       message: "Component ExampleComponent encountered a warning."
 
 ---
+#done
 SimpleComputeVolume:
   uuid: "123e4567-e89b-12d3-a456-426614174000"
   name: "ExampleVolume"
@@ -298,14 +299,17 @@ SimpleComputeVolume:
   resource: "456e7890-e12b-34d5-a678-123456789abc"
 
 ---
+#done
 SimpleComputeMemoryOffered:
   min: 4
   max: 16
 
+#done
 SimpleComputeMemoryRequested:
   min: 8
   max: 32
 
+#done
 SimpleComputeMemory:
   requested:
     min: 8
@@ -314,6 +318,7 @@ SimpleComputeMemory:
     min: 16
     max: 64
 
+#done
 SimpleComputeCoresRequested:
   min: 4
   max: 16
@@ -331,29 +336,7 @@ SimpleComputeCores:
     max: 16
 
 ---
-SimpleComputeSpec-:
-  cores:
-    requested:
-      min: 2
-      max: 8
-    offered:
-      min: 4
-      max: 16
-  memory:
-    requested:
-      min: 8
-      max: 32
-    offered:
-      min: 16
-      max: 64
-  volumes:
-    - path: "/data"
-      mode: "READWRITE"
-      resource: "123e4567-e89b-12d3-a456-426614174000"
-    - path: "/logs"
-      mode: "READONLY"
-      resource: "456e7890-e12b-34d5-a678-123456789abc"
-
+#done
 SimpleComputeSpec:
   cores:
     requested:
@@ -416,7 +399,7 @@ AbstractComputeResource:
         name: "ExampleComputeResource"
       message: "Compute resource ExampleComputeResource has been created."
 
-
+#done
 SimpleComputeResource:
   uuid: "123e4567-e89b-12d3-a456-426614174000"
   name: "ExampleComputeResource"
